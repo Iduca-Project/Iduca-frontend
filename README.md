@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Iduca | Plataforma de Treinamentos Corporativos
 
-## Getting Started
+Bem-vindo ao **Iduca**, um sistema moderno e integrado para **gestão de treinamentos corporativos**! Este repositório contém o código-fonte da **interface web (Front-end)** do projeto, desenvolvido como trabalho final do curso técnico no SENAI. 🎓
 
-First, run the development server:
+## 🌐 Link do protótipo (Figma)
+Quer ver como tudo foi planejado visualmente?  
+👉 [Clique aqui para acessar o Figma](https://www.figma.com/design/P57LINxT8pqIO82RMSCefZ/Iduca_official?node-id=0-1&t=VfNNpWvoVvXKX9id-1)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🧩 Sobre o projeto
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O **Iduca** propõe o desenvolvimento de um sistema integrado para a **gestão de treinamentos corporativos**, com o objetivo de:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 📚 **Centralizar informações** dos treinamentos.
+- 🤖 **Automatizar processos** de cadastro, acompanhamento e emissão de certificados.
+- 📊 **Fornecer relatórios estratégicos** sobre o desempenho dos colaboradores.
+- 🎯 **Acompanhar individualmente** a jornada de capacitação de cada colaborador.
+- 🧾 **Emitir certificados automaticamente** ao fim dos cursos.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+A solução visa trazer **eficiência, organização e profissionalismo** para o ambiente de ensino corporativo dentro das empresas.
 
-## Learn More
+## ⚙️ Tecnologias usadas
 
-To learn more about Next.js, take a look at the following resources:
+- React + TypeScript
+- Vite
+- TailwindCSS
+- React Router
+- Axios
+- Context API
+- e muito carinho 💖
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚧 Status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Projeto em desenvolvimento 🚀  
+Última atualização: **06/05/2025**
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
