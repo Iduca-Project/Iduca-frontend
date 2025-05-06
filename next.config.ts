@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/",
-        destination: "/home"
+        destination: "/login"
       },
       {
-        source: "/login",
-        destination: "/login"
+        source: "/home",
+        destination: "/home"
       },
       {
         source: "/courses",
@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
       {
         source: "/profile",
         destination: "/profile"
+      },
+      {
+        source: "/forgotPass",
+        destination: "/forgotPass"
       },
     ]
   }
