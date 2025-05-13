@@ -10,11 +10,15 @@
   --normalBlueHover: #1141A8;
   --darkBlue: #0C2850;
   --aquamarine: #16C5A5;
-  --green: #22C55E;
   --purple: #A855F7;
+  --green: #22C55E;
+  --greenOpacity: #22c55e4d;
   --blue: #007FE6;
+  --blueOpacity: #007fe642;
   --yellow: #CA8A04;
+  --yellowOpacity: #ca8b044b;
   --red: #FF5050;
+  --lightGray: #F1F5F9;
   --shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
