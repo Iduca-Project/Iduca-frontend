@@ -25,6 +25,12 @@ interface ICardCourse {
 const Home = () => {
     const router = useRouter();
 
+    const eventos = [
+        { title: "Reunião com o time", date: new Date(2025, 3, 23) },
+        { title: "Entrega do projeto", date: new Date(2025, 3, 30) },
+        { title: "Entrega final", date: new Date(2025, 1, 20) },
+      ];
+
     return (
         <>
             <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} ></Menu>
@@ -99,7 +105,7 @@ const Home = () => {
                         <h1 className="md:text-2xl text-xl font-bold">Calendário de aulas</h1>
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.calendar)}></CuteButton>
                     </div>
-                    <Calendar/>
+                    <Calendar events={eventos}/>
                 </div>
             </div>
         </>
