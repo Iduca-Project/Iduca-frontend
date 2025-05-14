@@ -31,7 +31,7 @@ A solução visa trazer **eficiência, organização e profissionalismo** para o
 ## 🚧 Status
 
 Projeto em desenvolvimento 🚀  
-Última atualização: **07/05/2025**
+Última atualização: **14/05/2025**
 
 ---
 
