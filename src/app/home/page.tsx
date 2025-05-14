@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from "@/src/constants/routes";
 import { CardCourse } from "@/src/components/cardCourse";
 import imageLideranca from "../../../public/image/lideranca.jpg";
-import { Skeleton } from "@mui/material";
+import { Calendar } from "@/src/components/calendar";
 
 interface ICardCourse {
     image: string;
@@ -27,7 +27,6 @@ const Home = () => {
 
     return (
         <>
-            {/* <Skeleton /> */}
             <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} ></Menu>
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                 {/* Title */}
@@ -84,25 +83,23 @@ const Home = () => {
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.courses)}></CuteButton>
                     </div>
                     <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo."} progress={37} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={47} rating={4.7} participants={12} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={68} rating={4.7} participants={1287} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={22} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        <CardCourse id={1} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        <CardCourse id={2} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo."} progress={37} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        <CardCourse id={3} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={47} rating={4.7} participants={12} difficulty={2}></CardCourse>
+                        <CardCourse id={4} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={68} rating={4.7} participants={1287} difficulty={2}></CardCourse>
+                        <CardCourse id={5} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={22} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={2}></CardCourse>
                     </div>
                 </div>
 
                 {/* Calendar */}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mb-10">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold">Calendário de aulas</h1>
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.calendar)}></CuteButton>
                     </div>
-                    <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-
-                    </div>
+                    <Calendar/>
                 </div>
             </div>
         </>
