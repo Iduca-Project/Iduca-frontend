@@ -81,8 +81,8 @@ const Login = () => {
                         <Link className="self-end text-(--normalBlue) hover:text-(--normalBlueHover)" href={ROUTES.forgotPass}>Esqueceu a senha?</Link>
                     </div>
                 </div>
-                <div className="bg-(--normalBlue) flex items-center justify-center w-full rounded-2xl hover:bg-(--normalBlueHover)">
-                    <Button className="w-full" onClick={login} disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit"}}>Entrar</Button>
+                <div className="bg-(--normalBlue) flex items-center justify-center w-full rounded-2xl hover:bg-(--normalBlueHover) text-white">
+                    <Button className="w-full" onClick={login} disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit", color: "inherit"}}>Entrar</Button>
                 </div>
                 <Divider />
                 <p className="text-(--gray) text-center">Não tem uma conta? Peça ao seu gestor para criar uma para você!</p>

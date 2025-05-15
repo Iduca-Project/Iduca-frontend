@@ -1,6 +1,8 @@
 "use client";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { CuteButton } from './cuteButton';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 interface ICard {
     title: string;
@@ -22,6 +24,7 @@ export const Card = ({ title, description, onClickCard, onClickButton, color, ic
                     {description && <p className="text-sm text-(--gray)">{description}</p>}
                 </div>
             </div>
+            {onClickButton && <CuteButton classname="mr-3" icon={ArrowForwardIcon} onClick={onClickButton} text='Ver certificado'/> }
         </div>
     );
 }

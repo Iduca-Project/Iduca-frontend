@@ -9,6 +9,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
 import { Card } from "@/src/components/card";
+import { useRouter } from 'next/navigation'
 
 
 const interests = [
@@ -19,7 +20,14 @@ const interests = [
     {title: "Design"},
 ]
 
+
 const Profile = () => {
+    const router = useRouter();
+    
+    const goToCertificate = (id : number) => {
+        router.push(`/certificate/${id}`)
+    }
+
     return (
         <>
             <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} ></Menu>
@@ -34,9 +42,9 @@ const Profile = () => {
                 <div className="grid xl:grid-cols-[1.1fr_1.5fr] grid-cols-1 w-full gap-6">
                     <div className="bg-(--card)  border border-(--stroke) shadow-(--shadow) rounded-2xl px-6 py-10 flex flex-col gap-20 items-center">
                         <Image className="rounded-full object-cover aspect-square w-52" src={pessoa} alt="imagem" width={3000} height={3000} priority></Image>
-                        <div className="flex flex-col gap-6">
-                            <TextField label="Nome completo" variant="outlined" defaultValue={`Sabrina Mortean`} slotProps={{ input: { readOnly: true } }} />
-                            <TextField label="E-mail corporativo" variant="outlined" defaultValue={`sabrina@bosch.com`} slotProps={{ input: { readOnly: true } }} />
+                        <div className="flex flex-col gap-6 text-(--text)">
+                            <TextField label="Nome completo" variant="outlined" defaultValue={`Sabrina Mortean`} slotProps={{ input: { readOnly: true } }}/>
+                            <TextField label="E-mail corporativo" variant="outlined" defaultValue={`sabrina@bosch.com`} slotProps={{ input: { readOnly: true } }} sx={{ color: "inherit" }}/>
                             <Autocomplete
                                 multiple
                                 readOnly
@@ -44,8 +52,9 @@ const Profile = () => {
                                 options={interests.map((item) => item.title)}
                                 defaultValue={interests.map((item) => item.title)}
                                 disableCloseOnSelect
+                                sx={{ color: "var(--text)" }}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Interesses" variant="outlined" />
+                                    <TextField {...params} label="Interesses" variant="outlined" sx={{ color: "inherit" }}/>
                                 )}
                                 renderValue={(selected) => (
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -68,9 +77,9 @@ const Profile = () => {
                             />
                         </div>
                         <CuteButton text="Editar Perfil" icon={ArrowForwardIcon}></CuteButton>
+                    </div>   
 
-                            
-                    </div>     
+                    {/* Courses */}
                     <div className="flex bg-(--card) flex-col border border-(--stroke) p-5 w-full rounded-2xl gap-4 shadow-(--shadow)">
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xl font-bold text-(--text)">Conquistas</h1>
@@ -92,10 +101,10 @@ const Profile = () => {
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xl font-bold text-(--text)">Cursos finalizados</h1>
                             <div className="flex flex-col gap-2 items-center justify-center">
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => console.log("a")}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => console.log("a")}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => console.log("a")}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => console.log("a")}></Card>
+                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(1)}></Card>
+                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(2)}></Card>
+                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(3)}></Card>
+                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(4)}></Card>
                             </div>
                         </div>
                         

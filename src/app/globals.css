@@ -51,31 +51,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
+    --background: #000000;
     --stroke: #D0D0D0;
     --gray: hsl(240 5% 64.9%);
-    --card: #09090b;
+    --card: #151518;
     --hoverWhite: #ffffff27;
     --normalBlue: #2463EB;
     --normalBlueHover: #1141A8;
     --darkBlue: #0C2850;
     --aquamarine: #00a587;
     --purple: #A855F7;
-    --green: #006826;
-    --greenOpacity: #004b1b4d;
-    --blue: #003f72;
-    --blueOpacity: #002c5042;
-    --yellow: #5c3f00;
-    --yellowOpacity: #412c004b;
+    --green: #009135;
+    --greenOpacity: #00702996;
+    --blue: #0277d6;
+    --blueOpacity: #00579e8c;
+    --yellow: #c28604;
+    --yellowOpacity: #6e4c01c5;
     --red: #FF5050;
-    --lightGray: #181818;
+    --lightGray: #0c0c0c;
     --shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     --text: #ffffff;
 
   }
-} */
+}
 
 body {
   background: var(--background);
