@@ -63,12 +63,12 @@ const Login = () => {
     return (
         <div className="w-screen h-screen gap-5 flex flex-col items-center p-2 md:py-20 py-10">
             <div className="flex flex-col items-center">
-                <h1 className="text-5xl" style={{ fontFamily: 'var(--jura)'}}>Iduca</h1>
+                <h1 className="text-5xl text-(--text)" style={{ fontFamily: 'var(--jura)'}}>Iduca</h1>
                 <p className="text-(--gray) text-center">Plataforma de treinamento corporativo</p>
             </div>
-            <div className="w-full gap-8 px-5 py-5 rounded-2xl bg-(--card) shadow-(--shadow) md:max-w-lg flex flex-col">
+            <div className="w-full gap-8 px-5 py-5 rounded-2xl border border-(--stroke) bg-(--card) shadow-(--shadow) md:max-w-lg flex flex-col">
                 <div className="flex flex-col gap-1">
-                    <h1 className="font-semibold text-2xl">Entrar</h1>
+                    <h1 className="font-semibold text-2xl text-(--text)">Entrar</h1>
                     <p className="text-(--gray)">Acesse sua conta para continuar seus treinamentos</p>
                 </div>
                 <div className="w-full flex flex-col gap-4">

@@ -80,12 +80,12 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
 
         return (
         <>
-            <div className="bg-(--card) h-14 shadow-(--shadow) items-center flex justify-between px-5">
+            <div className="bg-(--card) border-b border-(--stroke) fixed w-screen h-14 z-50 shadow-(--shadow) items-center flex justify-between px-5">
                 <div className="flex items-center gap-3">
                     <Button sx={{ color: "var(--gray)", padding: "0px", width: "30px", minWidth: "0px" }} onClick={toggleDrawer(true)}>
                         <MenuOutlinedIcon sx={{ width: "30px" }}/>
                     </Button>
-                    <h1 className="text-2xl font-semibold m-0" style={{ fontFamily: 'var(--jura)'}}>Iduca</h1>
+                    <h1 className="text-2xl font-semibold m-0 text-(--text)" style={{ fontFamily: 'var(--jura)'}}>Iduca</h1>
                 </div>
                 <div className="flex gap-3 items-center">
                     <CuteButton icon={NotificationsNoneOutlinedIcon} onClick={getNotify}></CuteButton>
@@ -95,6 +95,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
             <Drawer open={isOpen} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>
+            <div className="h-14"></div>
         </>
     );
 }

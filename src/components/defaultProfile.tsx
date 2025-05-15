@@ -38,8 +38,8 @@ export const DefaultProfile = ({ onClick, firstLetter, lastLetter } : IDefaultPr
 
     return (
         <button onClick={onClick} className="md:flex hidden p-1 rounded-full w-9 h-9 items-center justify-center cursor-pointer" style={{ backgroundColor: color }}>
-            <h1 className="text-white">{firstLetter}</h1>
-            <h1 className="text-white">{lastLetter}</h1>
+            <h1 className="text-white dark:text-black">{firstLetter}</h1>
+            <h1 className="text-white dark:text-black">{lastLetter}</h1>
         </button>
       );
 }
