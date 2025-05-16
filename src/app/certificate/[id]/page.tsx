@@ -7,11 +7,12 @@ import { BackButton } from "@/src/components/backButton";
 
 interface ICertificate {
   params: {
-    id: string;
+    certificateId: string;
   };
 }
 
-const Certificate = async ({ params: { id } }: ICertificate) => {
+const Certificate = async ({ params }: ICertificate) => {
+  const { certificateId } = params;
   return (
     <>
       <Menu op1="Dashboard" op2="Cursos" op3="Calendário" op4="Perfil" />
@@ -21,7 +22,7 @@ const Certificate = async ({ params: { id } }: ICertificate) => {
         <div className="flex md:flex-row flex-col gap-5 items-center p-1 md:items-start">
           <BackButton />
           <h1 className="md:text-2xl text-xl font-bold text-(--text) text-center">
-            Certificado do Curso de Marketing Digital {id}
+            Certificado do Curso de Marketing Digital {certificateId}
           </h1>
         </div>
 

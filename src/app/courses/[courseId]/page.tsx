@@ -5,17 +5,22 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined';
 import Image from "next/image";
 import LinearProgress from "@mui/material/LinearProgress";
-import { Button, Divider } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Divider } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Link from "next/link";
 
 
 interface ISelectCourse {
-    params: {
-        courseId: string;
-    }
+  params: {
+    courseId: string;
+  };
 }
 
-const exempleCourse = {
+
+const selectCourse = async ({ params } : ISelectCourse) => {
+    const { courseId } = params;
+
+    const exempleCourse = {
     image: imagem,
     title: "Liderança estratégica",
     description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt accusamus maxime animi! Ducimus dolore eaque nobis ea optio minus placeat officia saepe voluptatum dolores fugit, explicabo enim illum alias quam. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt accusamus maxime animi! Ducimus dolore eaque nobis ea optio minus placeat officia saepe voluptatum dolores fugit, explicabo enim illum alias quam.",
@@ -24,11 +29,9 @@ const exempleCourse = {
     participants: 23,
     difficulty: 1,
     time: 12,
-    id: 1,
+    id: courseId,
 };
 
-
-const selectCourse = async ({ params: { courseId } } : ISelectCourse) => {
     return (
         <>
             <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} ></Menu>
@@ -85,7 +88,19 @@ const selectCourse = async ({ params: { courseId } } : ISelectCourse) => {
                 <Divider sx={{ borderColor: 'var(--gray)' }} />
 
 
-
+                <div>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <h1 className="text-(--blue) font-bold mr-2">Módulo 1 -</h1>
+                            <p className="text-(--text)">Gerenciamento de Equipes</p>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Link href={""}>
+                                <h1 className="text-(--text)">Diferenças entre líder e chefe</h1>
+                            </Link>
+                        </AccordionDetails>
+                    </Accordion>
+                </div>
             </div>
         </>
     )
