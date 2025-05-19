@@ -12,6 +12,7 @@ import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
 import FilePresentOutlinedIcon from '@mui/icons-material/FilePresentOutlined';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 
 interface ISelectCourse {
@@ -34,6 +35,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
         difficulty: 1,
         duration: 12,
         category: "Gestão",
+        haveExam: true,
         id: courseId,
         modules: [
             {
@@ -63,12 +65,6 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                         id: 4,
                         type: 4,
                         title: "Projeto",
-                        completed: false
-                    },
-                    {
-                        id: 5,
-                        type: 5,
-                        title: "Prova Final",
                         completed: false
                     }
                 ]
@@ -101,12 +97,6 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                         type: 4,
                         title: "Conteúdo 4",
                         completed: false
-                    },
-                    {
-                        id: 5,
-                        type: 5,
-                        title: "Conteúdo 5",
-                        completed: false
                     }
                 ]
             },
@@ -138,17 +128,36 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                         type: 4,
                         title: "Conteúdo 4",
                         completed: false
-                    },
-                    {
-                        id: 5,
-                        type: 5,
-                        title: "Conteúdo 5",
-                        completed: false
                     }
                 ]
             },
         ]
     };
+
+    const testExemple = {
+        id: 1,
+        title: "Prova Final",
+        questions: [
+            {
+                id: 1,
+                question: "What is the command to initialize a Git repository?",
+                options: [
+                    { id: 1, text: "git start", alternative: "a" },
+                    { id: 2, text: "git init", alternative: "b" },
+                    { id: 3, text: "git begin", alternative: "c" }
+                ]
+            },
+            {
+                id: 2,
+                question: "What file tracks your commits?",
+                options: [
+                    { id: 1, text: ".git/config", alternative: "a" },
+                    { id: 2, text: ".gitignore", alternative: "b" },
+                    { id: 3, text: ".git", alternative: "c" }
+                ]
+            }
+        ]
+    }
 
     return (
         <>
@@ -191,7 +200,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                 </div>
                                 <LinearProgress variant="determinate" value={exempleCourse.progress} />
                             </div>
-                            <Link href={`/courses/${courseId}/${exempleCourse.id}`} className="w-3/6 self-start">
+                            <Link href={`/project/1`} className="w-3/6 self-start">
                                 <div className="bg-(--normalBlue) flex items-center justify-center w-full rounded-2xl hover:bg-(--normalBlueHover) text-white">
                                     <Button className="w-full" disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit", color: "inherit", height: "45px"}}>{exempleCourse.progress > 0 ? "Continuar Curso" : "Iniciar Curso"}</Button>
                                 </div>
@@ -219,43 +228,48 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                     {content.completed ? 
                                         <>
                                             {content.type == 1 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/textLesson/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--blueOpacity) transition-colors duration-100">
                                                         <div className="bg-(--blue) w-1 min-h-10"></div>
                                                         <FeedOutlinedIcon sx={{ color: "var(--blue)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
+                                                        <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                     </div>
                                                 </Link>
                                             : content.type == 2 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/videoLesson/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--redOpacity) transition-colors duration-100">
                                                         <div className="bg-(--red) w-1 min-h-10"></div>
                                                         <VideocamOutlinedIcon sx={{ color: "var(--red)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
+                                                        <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                     </div>
                                                 </Link>
                                             : content.type == 3 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/quiz/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--yellowOpacity) transition-colors duration-100">
                                                         <div className="bg-(--yellow) w-1 min-h-10"></div>
-                                                        <FilePresentOutlinedIcon sx={{ color: "var(--yellow)"}}/>
+                                                        <FeedOutlinedIcon sx={{ color: "var(--yellow)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
+                                                        <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                     </div>
                                                 </Link>
                                             : content.type == 4 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/project/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--greenOpacity) transition-colors duration-100">
                                                         <div className="bg-(--green) w-1 min-h-10"></div>
-                                                        <FeedOutlinedIcon sx={{ color: "var(--green)"}}/>
+                                                        <FilePresentOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
+                                                        <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                     </div>
                                                 </Link>
                                             : 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/exam/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--purpleOpacity) transition-colors duration-100">
                                                         <div className="bg-(--purple) w-1 min-h-10"></div>
                                                         <ContentPasteOutlinedIcon sx={{ color: "var(--purple)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
+                                                        <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                     </div>
                                                 </Link>
                                             }
@@ -263,39 +277,39 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                     :
                                         <>
                                             {content.type == 1 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/textLesson/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--blueOpacity) transition-colors duration-100">
                                                         <div className="bg-(--yellow) w-1 min-h-10"></div>
-                                                        <ContentPasteOutlinedIcon sx={{ color: "var(--blue)"}}/>
+                                                        <FeedOutlinedIcon sx={{ color: "var(--blue)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
                                                     </div>
                                                 </Link>
                                             : content.type == 2 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/videoLesson/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--redOpacity) transition-colors duration-100">
                                                         <div className="bg-(--red) w-1 min-h-10"></div>
-                                                        <ContentPasteOutlinedIcon sx={{ color: "var(--red)"}}/>
+                                                        <VideocamOutlinedIcon sx={{ color: "var(--red)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
                                                     </div>
                                                 </Link>
                                             : content.type == 3 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/quiz/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--yellowOpacity) transition-colors duration-100">
                                                         <div className="bg-(--yellow) w-1 min-h-10"></div>
-                                                        <ContentPasteOutlinedIcon sx={{ color: "var(--yellow)"}}/>
+                                                        <FeedOutlinedIcon sx={{ color: "var(--yellow)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
                                                     </div>
                                                 </Link>
                                             : content.type == 4 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/project/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--greenOpacity) transition-colors duration-100">
                                                         <div className="bg-(--green) w-1 min-h-10"></div>
-                                                        <ContentPasteOutlinedIcon sx={{ color: "var(--green)"}}/>
+                                                        <FilePresentOutlinedIcon sx={{ color: "var(--green)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
                                                     </div>
                                                 </Link>
                                             : 
-                                                <Link key={`${module.id}-${content.id}`} href={`/courses/${courseId}/${module.id}/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/exam/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--purpleOpacity) transition-colors duration-100">
                                                         <div className="bg-(--purple) w-1 min-h-10"></div>
                                                         <ContentPasteOutlinedIcon sx={{ color: "var(--purple)"}}/>
@@ -310,6 +324,23 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                             </AccordionDetails>
                         </Accordion>
                     )}
+                    {exempleCourse.haveExam && 
+                        <Accordion>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <h1 className="text-(--blue) font-bold mr-2">Módulo {exempleCourse.modules.length + 1} -</h1>
+                                <p className="text-(--text)">Prova Final</p>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Link href={`/exam/${testExemple.id}`}>
+                                    <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--purpleOpacity) transition-colors duration-100">
+                                        <div className="bg-(--purple) w-1 min-h-10"></div>
+                                        <ContentPasteOutlinedIcon sx={{ color: "var(--purple)"}}/>
+                                        <h1 className="text-(--text)">{testExemple.title}</h1>
+                                    </div>
+                                </Link>
+                            </AccordionDetails>
+                        </Accordion>
+                    }
                 </div>
             </div>
         </>
