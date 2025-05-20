@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import { NextLessonButton } from "./nextLessonButton";
+import { CuteButton } from "./cuteButton";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from "@/src/constants/routes";
 
 interface IQuizClient {
   quizId: number;
+  isExam?: boolean;
 }
 
 interface Option {
@@ -33,6 +38,7 @@ interface QuizData {
 const projectExemple = {
   id: 1,
   title: "Prova Final",
+  courseId: 2,
   questions: [
     {
       id: 1,
@@ -87,7 +93,9 @@ const projectExemple = {
   }
 };
 
-export const QuizClient = ({ quizId }: IQuizClient) => {
+export const QuizClient = ({ quizId, isExam }: IQuizClient) => {
+  const router = useRouter();
+
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
 
   const handleSelect = (questionId: number, optionId: number) => {
@@ -144,9 +152,15 @@ export const QuizClient = ({ quizId }: IQuizClient) => {
         </pre> */}
 
         {/* Botão de próxima aula */}
-        <div className="self-center">
-            <NextLessonButton href={nextLessonHref()} />
-        </div>
+        {!isExam ? 
+          <div className="self-center">
+              <CuteButton text="Encerrar Prova" icon={CheckCircleOutlineIcon} onClick={() => (router.push(`/courses/${projectExemple.courseId}`))}/>
+          </div>
+        :
+          <div className="self-center">
+              <NextLessonButton href={nextLessonHref()} />
+          </div>
+        }
     </div>
   );
 };

@@ -9,28 +9,9 @@ interface IQuiz{
   };
 }
 
-const nextLessonHref = () => {
-    const nextLesson = quizLessonExemple.nextLesson;
-    
-    switch(nextLesson.type) {
-      case 1:
-        return `/textLesson/${nextLesson.id}`;
-      case 2:
-        return `/videoLesson/${nextLesson.id}`;
-      case 3:
-        return `/quiz/${nextLesson.id}`;
-      case 4:
-        return `/project/${nextLesson.id}`;
-      case 5:
-        return `/exam/${nextLesson.id}`;
-      default:
-        return '/';
-
-    }
-}
 const quizLessonExemple = {
   id: 1,
-  title: "Prova Final",
+  title: "Quiz sobre github",
   questions: [
     {
       id: 1,
@@ -101,7 +82,7 @@ const quiz = async ({ params } : IQuiz) => {
                 </div>
 
                 {/* Details */}
-                <QuizClient quizId={1}></QuizClient>
+                <QuizClient quizId={1} isExam></QuizClient>
 
             </div>
         </>
