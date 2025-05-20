@@ -87,12 +87,18 @@ const videoLesson = async ({ params } : IVideoLesson) => {
 
                 {/* Details */}
                 <div className="flex flex-col md:p-10 p-3 bg-(--card) shadow-(--shadow) rounded-2xl gap-10 items-center">
-                <iframe width="760" height="515" src={`${videoLessonExemple.content.value}`} title="YouTube video player"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
+                    <div className="relative w-full pb-[56.25%]">
+                        <iframe
+                            src={`${videoLessonExemple.content.value}`}
+                            title="YouTube video player"
+                            className="absolute top-0 left-0 w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
                     <div className="self-center">
                         <NextLessonButton href={nextLessonHref()}></NextLessonButton>
-
                     </div>
-
                 </div>
             </div>
         </>

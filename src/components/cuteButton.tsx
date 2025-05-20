@@ -5,11 +5,12 @@ interface ICuteButton {
     icon?: SvgIconComponent,
     onClick?: () => void;
     classname?: string;
+    type?: boolean;
 }
 
-export const CuteButton: React.FC<ICuteButton> = ({ text, icon: Icon, onClick, classname }) => {
+export const CuteButton: React.FC<ICuteButton> = ({ text, icon: Icon, onClick, classname, type }) => {
     return (
-        <button onClick={onClick} className={`border border-(--gray) p-1.5 hover:text-white text-(--text) rounded-lg inline-flex gap-2 hover:bg-(--aquamarine) transition-all duration-100 cursor-pointer ${classname}`}>
+        <button type={type ? 'submit' : 'button'} onClick={onClick} className={`border border-(--gray) p-1.5 hover:text-white text-(--text) rounded-lg inline-flex gap-2 hover:bg-(--aquamarine) transition-all duration-100 cursor-pointer ${classname}`}>
           {text && <span className='text-inherit'>{text}</span>}
           {Icon && <Icon sx={{":hover": { color: "inherit" }}}/>}
         </button>
