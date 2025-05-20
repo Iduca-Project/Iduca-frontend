@@ -12,6 +12,11 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from "../constants/routes";
 import { CuteButton } from "./cuteButton";
 import { DefaultProfile } from "./defaultProfile";
+import LogoutIcon from '@mui/icons-material/Logout';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { useThemeMode } from "../app/themeContext";
+import { NotifyModal } from "./notifyModal";
 
 
 interface IMenu {
@@ -23,6 +28,8 @@ interface IMenu {
 
 export const Menu = ({op1, op2, op3, op4} : IMenu) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { mode, toggleMode } = useThemeMode();
+    const [notifyOpen, setNotifyOpen] = useState(false);
 
     const router = useRouter();
 
@@ -31,7 +38,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
     };
 
     const getNotify = () => {
-        alert("teste")
+        setNotifyOpen(true);
     }
 
     const DrawerList = (
@@ -41,7 +48,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
             <List sx={{ backgroundColor: "inherit", width: "240px" }}>
                 <ListItem sx={{padding: "0px"}}>
                     <ListItemButton className="w-full" sx={{padding: "8px", paddingX: "10px"}}>
-                        <ListItemIcon className="w-full transform transition-all duration-150 rounded hover:bg-(--hoverWhite) px-3 py-1 gap-4 items-center flex">
+                        <ListItemIcon className="w-full transform transition-all duration-150 rounded px-3 py-1 gap-4 items-center flex">
                             <DashboardOutlinedIcon sx={{ color: "white" }}/>
                             <ListItemText onClick={() => router.push(ROUTES.home)} className="text-white font-bold" primary={op1}/>
                         </ListItemIcon>
@@ -50,7 +57,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
 
                 <ListItem sx={{padding: "0px"}}>
                     <ListItemButton className="w-full" sx={{padding: "8px", paddingX: "10px"}}>
-                        <ListItemIcon className="w-full transform transition-all duration-150 rounded hover:bg-(--hoverWhite) px-3 py-1 gap-4 items-center flex">
+                        <ListItemIcon className="w-full transform transition-all duration-150 rounded px-3 py-1 gap-4 items-center flex">
                             <LibraryBooksOutlinedIcon sx={{ color: "white" }}/>
                             <ListItemText onClick={() => router.push(ROUTES.courses)} className="text-white font-bold" primary={op2}/>
                         </ListItemIcon>
@@ -59,7 +66,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
 
                 <ListItem sx={{padding: "0px"}}>
                     <ListItemButton sx={{padding: "8px", paddingX: "10px"}}>
-                        <ListItemIcon className="w-full transform transition-all duration-150 rounded hover:bg-(--hoverWhite) px-3 py-1 gap-4 items-center flex">
+                        <ListItemIcon className="w-full transform transition-all duration-150 rounded px-3 py-1 gap-4 items-center flex">
                             <CalendarMonthOutlinedIcon sx={{ color: "white" }}/>
                             <ListItemText onClick={() => router.push(ROUTES.calendar)} className="text-white font-bold" primary={op3}/>
                         </ListItemIcon>
@@ -68,7 +75,7 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
 
                 <ListItem sx={{padding: "0px"}}>
                     <ListItemButton sx={{padding: "8px", paddingX: "10px"}}>
-                        <ListItemIcon className="w-full transform transition-all duration-150 rounded hover:bg-(--hoverWhite) px-3 py-1 gap-4 items-center flex">
+                        <ListItemIcon className="w-full transform transition-all duration-150 rounded px-3 py-1 gap-4 items-center flex">
                             <Person2OutlinedIcon sx={{ color: "white" }}/>
                             <ListItemText onClick={() => router.push(ROUTES.profile)} className="text-white font-bold" primary={op4}/>
                         </ListItemIcon>
@@ -94,7 +101,23 @@ export const Menu = ({op1, op2, op3, op4} : IMenu) => {
             </div>
             <Drawer open={isOpen} onClose={toggleDrawer(false)}>
                 {DrawerList}
+                <div className="bg-(--darkBlue) flex justify-between p-3">
+                    <Button onClick={toggleMode}>
+                        {mode === "dark" ? (
+                            <LightModeIcon sx={{ color: "white" }} />
+                        ) : (
+                            <DarkModeIcon sx={{ color: "white" }} />
+                        )}
+                    </Button>
+                    <Button onClick={() => router.push(ROUTES.login)}>
+                        <LogoutIcon sx={{ color: "white" }}/>
+                    </Button>
+                </div>
             </Drawer>
+
+            <NotifyModal open={notifyOpen} onClose={() => setNotifyOpen(false)}>
+            </NotifyModal>
+
             <div className="h-14"></div>
         </>
     );
