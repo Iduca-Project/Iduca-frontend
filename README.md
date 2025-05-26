@@ -21,7 +21,7 @@ A solução visa trazer **eficiência, organização e profissionalismo** para o
 ## ⚙️ Tecnologias usadas
 
 - React + TypeScript
-- Vite
+- MUI
 - TailwindCSS
 - React Router
 - Axios
@@ -31,7 +31,7 @@ A solução visa trazer **eficiência, organização e profissionalismo** para o
 ## 🚧 Status
 
 Projeto em desenvolvimento 🚀  
-Última atualização: **14/05/2025**
+Última atualização: **26/05/2025**
 
 ---
 
