@@ -2,17 +2,17 @@ import { BackButton } from "@/src/components/backButton";
 import { Menu } from "@/src/components/menu";
 import { PdfUploader } from "@/src/components/pdfUploarder";
 
-interface IProjectCompleted{
+interface IProject{
   params: {
     courseId: string;
   };
 }
 
 
-const projectCompleted = async ({ params } : IProjectCompleted) => {
+const project = async ({ params } : IProject) => {
     const { courseId } = params;
 
-    const projectCompletedExemple = {
+    const projectExemple = {
         id: 108,
         type: 3,
         title: "Projeto usando github",
@@ -30,10 +30,10 @@ const projectCompleted = async ({ params } : IProjectCompleted) => {
                 {/* Title */}
                 <div className="flex gap-8 items-center w-full p-1">
                     <BackButton/>
-                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">{projectCompletedExemple.title}</h1>
+                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">{projectExemple.title}</h1>
                 </div>
                 <div className="flex w-full flex-col gap-5">
-                    <p className="text-(--text) self-center">{projectCompletedExemple.description}</p>
+                    <p className="text-(--text) self-center">{projectExemple.description}</p>
                     <h1 className="text-xl font-bold text-(--text) self-center">Envie seu PDF</h1>
                     <PdfUploader pdfId={1}/>
                 </div>
@@ -44,4 +44,4 @@ const projectCompleted = async ({ params } : IProjectCompleted) => {
     )
 }
 
-export default projectCompleted;
+export default project;

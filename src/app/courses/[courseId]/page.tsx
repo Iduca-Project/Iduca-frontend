@@ -137,6 +137,8 @@ const selectCourse = async ({ params } : ISelectCourse) => {
     const testExemple = {
         id: 1,
         title: "Prova Final",
+        courseId: 5,
+        completed: false,
         questions: [
             {
                 id: 1,
@@ -246,7 +248,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                                     </div>
                                                 </Link>
                                             : content.type == 3 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/quiz/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/quizCompleted/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--yellowOpacity) transition-colors duration-100">
                                                         <div className="bg-(--yellow) w-1 min-h-10"></div>
                                                         <FeedOutlinedIcon sx={{ color: "var(--yellow)"}}/>
@@ -255,7 +257,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                                     </div>
                                                 </Link>
                                             : content.type == 4 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/project/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/projectCompleted/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--greenOpacity) transition-colors duration-100">
                                                         <div className="bg-(--green) w-1 min-h-10"></div>
                                                         <FilePresentOutlinedIcon sx={{ color: "var(--green)"}}/>
@@ -279,7 +281,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                             {content.type == 1 ? 
                                                 <Link key={`${module.id}-${content.id}`} href={`/textLesson/${content.id}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--blueOpacity) transition-colors duration-100">
-                                                        <div className="bg-(--yellow) w-1 min-h-10"></div>
+                                                        <div className="bg-(--blue) w-1 min-h-10"></div>
                                                         <FeedOutlinedIcon sx={{ color: "var(--blue)"}}/>
                                                         <h1 className="text-(--text) ">{content.title}</h1>
                                                     </div>
@@ -324,7 +326,8 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                             </AccordionDetails>
                         </Accordion>
                     )}
-                    {exempleCourse.haveExam && 
+                    {exempleCourse.haveExam && !testExemple.completed ? (
+
                         <Accordion>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <h1 className="text-(--blue) font-bold mr-2">Módulo {exempleCourse.modules.length + 1} -</h1>
@@ -340,7 +343,26 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                 </Link>
                             </AccordionDetails>
                         </Accordion>
-                    }
+                    ) : exempleCourse.haveExam && testExemple.completed ? (
+                        <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <h1 className="text-(--blue) font-bold mr-2">Módulo {exempleCourse.modules.length + 1} -</h1>
+                            <p className="text-(--text)">Prova Final</p>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Link href={`/examCompleted/${testExemple.id}`}>
+                                <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--purpleOpacity) transition-colors duration-100">
+                                    <div className="bg-(--purple) w-1 min-h-10"></div>
+                                    <ContentPasteOutlinedIcon sx={{ color: "var(--purple)"}}/>
+                                    <h1 className="text-(--text)">{testExemple.title}</h1>
+                                </div>
+                            </Link>
+                        </AccordionDetails>
+                    </Accordion>
+                    ) : (
+                        <>
+                        </>
+                    )}
                 </div>
             </div>
         </>
