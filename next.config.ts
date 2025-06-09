@@ -60,6 +60,10 @@ const nextConfig: NextConfig = {
         source: "/forgotPass",
         destination: "/forgotPass"
       },
+      {
+        source: "/addCourse",
+        destination: "/addCourse"
+      },
     ]
   }
 };

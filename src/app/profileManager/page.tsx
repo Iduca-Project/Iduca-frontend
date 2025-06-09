@@ -3,6 +3,7 @@
 import { Menu } from "@/src/components/menu";
 import Image, { StaticImageData } from "next/image";
 import pessoa from "../../../public/image/pessoa.jpg";
+import background from "../../../public/image/profileImageBackground.webp";
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { CuteButton } from "@/src/components/cuteButton";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -158,7 +159,14 @@ const Profile = () => {
                     </div>   
 
                     {/* Courses */}
-                    <div className="flex bg-(--card) flex-col border border-(--stroke) p-5 w-full rounded-2xl gap-4 shadow-(--shadow)">
+                    <Image
+                        className="lg:flex hidden object-cover rounded-2xl aspect-square w-full lg:h-[776px] md:h-[700px]"
+                        src={background}
+                        alt="Foto de perfil"
+                        width={2000} height={2000}
+                        priority
+                    />
+                    {/* <div className="flex bg-(--card) flex-col border border-(--stroke) p-5 w-full rounded-2xl gap-4 shadow-(--shadow)">
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xl font-bold text-(--text)">Conquistas</h1>
                             <div className="flex flex-row gap-6 items-center justify-center">
@@ -186,7 +194,7 @@ const Profile = () => {
                             </div>
                         </div>
                         
-                    </div>    
+                    </div>     */}
                 </div>
             </div>
         </>

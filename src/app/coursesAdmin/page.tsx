@@ -5,12 +5,17 @@ import { FormControl, InputLabel, MenuItem, Pagination, Select, TextField, Theme
 import { useState } from "react";
 import imageLideranca from "../../../public/image/lideranca.jpg";
 import { CardCourse } from "@/src/components/cardCourse";
+import { CuteButton } from "@/src/components/cuteButton";
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from "@/src/constants/routes";
 
 
 const CATEGORIES = ["tecnologia", "gestao", "seguranca"];
 const LEVELS = ["iniciante", "intermediario", "avancado"];
 
 const CoursesAdmin = () => {
+    const router = useRouter();
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [level, setLevel] = useState("");
@@ -21,9 +26,16 @@ const CoursesAdmin = () => {
                 <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} admin></Menu>
                 <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                     {/* Title */}
-                    <div className="flex flex-col gap-1 items-center p-1 md:items-start">
-                        <h1 className="md:text-2xl text-xl font-bold text-(--text)">Catálogo de Cursos</h1>
-                        <p className="text-(--gray) text-sm md:text-lg text-center md:text-start">Explore todos os treinamentos disponíveis!</p>
+                    <div className="flex flex-row justify-between items-center p-1 md:items-start">
+                        <div className="flex-col gap-1">
+                            <h1 className="md:text-2xl text-xl font-bold text-(--text)">Catálogo de Cursos</h1>
+                            <p className="text-(--gray) text-sm md:text-lg text-center md:text-start">Explore todos os treinamentos disponíveis!</p>
+                        </div>
+                        <CuteButton 
+                            text="Criar novo curso" 
+                            icon={AddCircleOutlineOutlinedIcon}
+                            onClick={() => router.push(ROUTES.addCourse)}
+                        ></CuteButton>
                     </div>
 
                     {/* Search */}
@@ -75,16 +87,11 @@ const CoursesAdmin = () => {
                                 <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={3}></CardCourse>
                                 <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={1}></CardCourse>
                                 <CardCourse id={8} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={1}></CardCourse>
-                                <CardCourse id={5} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={22} rating={4.7} participants={128} difficulty={3}></CardCourse>
-                                <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={3}></CardCourse>
-                                <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                                <CardCourse id={8} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={1}></CardCourse>
                             </div>
                             <Pagination count={10} color="primary" />
                         </div>
                     </div>
                 </div>
-
         </>
     )
 }

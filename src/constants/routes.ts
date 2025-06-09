@@ -10,5 +10,6 @@ export enum ROUTES {
     calendar = "/calendar",
     profile = "/profile",
     profileManager = "/profileManager",
-    forgotPass = "/forgotPass"
+    forgotPass = "/forgotPass",
+    addCourse = "/addCourse"
 }

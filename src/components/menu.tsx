@@ -220,7 +220,7 @@ export const Menu = ({ op1, op2, op3, op4, manager, admin } : IMenu) => {
                 </div>
             </Drawer>
 
-            <NotifyModal open={notifyOpen} onClose={() => setNotifyOpen(false)}>
+            <NotifyModal title="Notificações" open={notifyOpen} onClose={() => setNotifyOpen(false)}>
                 <Card title="Curso" description="Você foi adicionado em um novo curso!" color="bg-[var(--purple)]"></Card>
                 <Card title="Curso" description="Você foi adicionado em um novo curso!" color="bg-[var(--purple)]"></Card>
                 <Card title="Curso" description="Você foi adicionado em um novo curso!" color="bg-[var(--purple)]"></Card>
