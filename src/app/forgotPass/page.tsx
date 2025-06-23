@@ -213,8 +213,8 @@ const ForgotPass = () => {
                 ) : (
                     <>
                         <div className="flex flex-col gap-1">
-                            <h1 className="font-semibold text-2xl text-(--text)">Confirmar E-mail</h1>
-                            <p className="text-(--gray)">Digite seu e-mail para enviarmos um código para recuperação da sua conta</p>
+                            <h1 className="font-semibold text-2xl text-(--text)">Redefinir sua senha</h1>
+                            <p className="text-(--gray)">Digite sua nova senha nos dois campos abaixo</p>
                         </div>
                         <div className="w-full flex flex-col gap-4">
                         <FormControl  variant="outlined">
