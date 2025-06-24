@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Menu } from "@/src/components/menu";
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
@@ -9,38 +10,94 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from "@/src/constants/routes";
 import { CardCourse } from "@/src/components/cardCourse";
-import imageLideranca from "../../../public/image/lideranca.jpg";
 import { CalendarComp } from "@/src/components/calendar";
+import api from "@/src/constants/api";
 
-interface ICardCourse {
-    image: string;
+interface IProgressData {
+    username: string;
+    totalCourses: number;
+    ongoingCourses: number;
+    completeCourses: number;
+    percenteGeneral: number;
+}
+
+interface ICourseInProgress {
+    id: string;
     title: string;
-    description: string;
+    image: string;
     progress: number;
+    description: string;
     rating: number;
     participants: number;
     difficulty: number;
+    category: string;
+}
+
+interface ICalendarEvent {
+    title: string;
+    date: Date;
+    type: number;
 }
 
 const Home = () => {
     const router = useRouter();
 
-    const eventos = [
-        { title: "Reunião com o time", date: new Date(2025, 3, 23), type: 1 },
-        { title: "Entrega do projeto", date: new Date(2025, 3, 30), type: 2 },
-        { title: "Entrega final", date: new Date(2025, 4, 20), type: 3 },
-        { title: "Entrega final 2", date: new Date(2025, 4, 20), type: 2 },
-        { title: "Entrega final 2", date: new Date(2025, 4, 26), type: 1 },
-        { title: "Entrega final 2", date: new Date(2025, 5, 13), type: 2 },
-    ];
+    const [progressData, setProgressData] = useState<IProgressData | null>(null);
+    const [inProgressCourses, setInProgressCourses] = useState<ICourseInProgress[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<ICalendarEvent[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const [progressRes, coursesRes, calendarRes] = await Promise.allSettled([
+                    api.get('/home/progress'),
+                    api.get('/home/coursesInProgress'),
+                    api.get('/calendar/next')
+                ]);
+
+                if (progressRes.status === 'fulfilled') {
+                    setProgressData(progressRes.value.data);
+                }
+                if (coursesRes.status === 'fulfilled') {
+                    setInProgressCourses(coursesRes.value.data);
+                }
+                if (calendarRes.status === 'fulfilled') {
+                    const formattedEvents = calendarRes.value.data.map((event: any) => ({
+                        title: event.description,
+                        date: new Date(event.date),
+                        type: event.type
+                    }));
+                    setCalendarEvents(formattedEvents);
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar dados da home:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <>
+                <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} />
+                <div className="text-center p-10">Carregando dados da Home...</div>
+            </>
+        )
+    }
 
     return (
         <>
-            <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} ></Menu>
+            <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} />
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                 {/* Title */}
                 <div className="flex flex-col gap-1 items-center p-1 md:items-start">
-                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">Bem vindo(a), Sabrina!</h1>
+                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">Bem vindo(a), {progressData?.username}!</h1>
                     <p className="text-(--gray) text-sm md:text-lg text-center md:text-start">Acompanhe seu progresso e próximos eventos!</p>
                 </div>
 
@@ -50,65 +107,74 @@ const Home = () => {
                     <div className="flex flex-col gap-2">
                         <div className="flex w-full justify-between">
                             <h2 className="text-(--text)">Progresso geral</h2>
-                            <h2 className="text-(--text)">53%</h2>
+                            <h2 className="text-(--text)">{progressData?.percenteGeneral || 0}%</h2>
                         </div>
-                        <LinearProgress variant="determinate" value={53} />
+                        <LinearProgress variant="determinate" value={progressData?.percenteGeneral || 0} />
                     </div>
                     <div className="flex justify-between gap-3 md:flex-row flex-col">
+                        {/* Card Total de Cursos */}
                         <div className="flex gap-4 items-center bg-(--lightGray) rounded w-full px-3 py-1.5 border border-(--stroke)">
                             <div className="flex items-center justify-center p-1 bg-(--blueOpacity) rounded-full">
                                 <ClassOutlinedIcon sx={{ color: "var(--blue)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">4</h1>
+                                <h1 className="font-bold text-(--text)">{progressData?.totalCourses || 0}</h1>
                                 <p className="text-(--gray)">Total de cursos</p>
                             </div>
                         </div>
+                         {/* Card Cursos em Andamento */}
                         <div className="flex gap-4 items-center bg-(--lightGray) rounded w-full px-3 py-1.5 border border-(--stroke)">
                             <div className="flex items-center justify-center p-1 bg-(--yellowOpacity) rounded-full">
                                 <ClassOutlinedIcon sx={{ color: "var(--yellow)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">4</h1>
+                                <h1 className="font-bold text-(--text)">{progressData?.ongoingCourses || 0}</h1>
                                 <p className="text-(--gray)">Em andamento</p>
                             </div>
                         </div>
+                        {/* Card Cursos Completos */}
                         <div className="flex gap-4 items-center bg-(--lightGray) rounded w-full px-3 py-1.5 border border-(--stroke)">
                             <div className="flex items-center justify-center p-1 bg-(--greenOpacity) rounded-full">
                                 <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">4</h1>
+                                <h1 className="font-bold text-(--text)">{progressData?.completeCourses || 0}</h1>
                                 <p className="text-(--gray)">Completos</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Course */}
+                {/* Lista de Cursos em Andamento */}
                 <div className="flex flex-col gap-4">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold text-(--text)">Cursos em andamento</h1>
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.courses)}></CuteButton>
                     </div>
                     <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-                        <CardCourse id={1} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={2} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo."} progress={37} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={3} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={47} rating={4.7} participants={12} difficulty={2}></CardCourse>
-                        <CardCourse id={4} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={68} rating={4.7} participants={1287} difficulty={2}></CardCourse>
-                        <CardCourse id={5} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={22} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        {inProgressCourses.map(course => (
+                            <CardCourse
+                                key={course.id}
+                                id={course.id} 
+                                image={course.image} 
+                                title={course.title} 
+                                description={course.description} 
+                                progress={course.progress} 
+                                rating={course.rating} 
+                                participants={course.participants} 
+                                difficulty={course.difficulty}
+                            />
+                        ))}
                     </div>
                 </div>
 
-                {/* Calendar */}
+                {/* Calendário */}
                 <div className="flex flex-col gap-4 mb-10">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold text-(--text)">Calendário de aulas</h1>
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.calendar)}></CuteButton>
                     </div>
-                    <CalendarComp events={eventos}/>
+                    <CalendarComp events={calendarEvents}/>
                 </div>
             </div>
         </>

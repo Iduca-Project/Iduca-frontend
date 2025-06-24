@@ -13,7 +13,7 @@ interface ICardCourse {
     rating: number;
     participants: number;
     difficulty: number;
-    id: number;
+    id: string;
 }
 
 export const CardCourse = ({ image, title, description, progress, rating, participants, id, difficulty } : ICardCourse) => {
@@ -36,10 +36,10 @@ export const CardCourse = ({ image, title, description, progress, rating, partic
                 <div className="p-3 pb-6 flex flex-col gap-3 md:gap-4">
                     <div className="flex lg:flex-row flex-col justify-between">
                         <h1 className="font-bold text-(--text)">{title}</h1>
-                        <div className="flex gap-0.5 items-center">
+                        {/* <div className="flex gap-0.5 items-center">
                             <StarRateIcon sx={{ color: "#FACC15" }}/>
                             <p className="text-sm text-(--gray)">{rating.toString()} ({participants.toString()} avaliações)</p>
-                        </div>
+                        </div> */}
                     </div>
                     <p className="overflow-hidden text-ellipsis line-clamp-2 text-(--text)">{description}</p>
                     <div>
