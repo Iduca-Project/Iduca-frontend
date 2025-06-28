@@ -57,32 +57,40 @@ const SelectCoursePage = async ({ params }: PageProps) => {
     };
 
     const getLinkForContent = (content: any) => {
-        if (!content || !content.id) {
-            return `/courses/${courseId}`;
-        }
+    if (!content || !content.id) {
+        return `/courses/${courseId}`;
+    }
 
-        const typeMap: { [key: number]: string } = {
-            1: 'textLesson',
-            2: 'videoLesson',
-            3: 'quiz',
-            4: 'project'
-        };
-
-        const pathSegment = typeMap[content.type];
-
-        if (!pathSegment) {
-            return `/courses/${courseId}`;
-        }
-
+    if (content.type === 3) {
+        const pathSegment = content.completed ? 'quizCompleted' : 'quiz';
         return `/courses/${courseId}/${pathSegment}/${content.id}`;
     }
 
+    const typeMap: { [key: number]: string } = {
+        1: 'textLesson',
+        2: 'videoLesson',
+        4: 'project'
+    };
+    const pathSegment = typeMap[content.type] || 'lesson';
+
+    return `/courses/${courseId}/${pathSegment}/${content.id}`;
+}
+
     const isExamCompleted = examData?.completed || false;
+
+    const examAsContent = examData ? {
+        id: examData.id,
+        type: 3, // O tipo de um quiz
+        completed: examData.completed || false
+    } : null;
+
+    // 2. Usamos nossa função existente para gerar o link!
+    const examLink = getLinkForContent(examAsContent);
 
     return (
         <>
             <ClientOnly>
-                <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} />
+            <Menu />
             </ClientOnly>
 
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
@@ -154,7 +162,6 @@ const SelectCoursePage = async ({ params }: PageProps) => {
                         </Accordion>
                     )}
 
-                    {/* LÓGICA DA PROVA FINAL INTEGRADA */}
                     {courseData.haveExam && examData && (
                         <Accordion sx={{ backgroundColor: 'var(--card)', color: 'var(--text)' }}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "var(--text)" }} />}>
@@ -162,7 +169,7 @@ const SelectCoursePage = async ({ params }: PageProps) => {
                                 <p>{examData.title}</p>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Link href={isExamCompleted ? `/examCompleted/${examData.id}` : `/exam/${examData.id}`}>
+                                <Link href={isExamCompleted ? `/examCompleted/${examData.id}` : `/courses/${courseId}/exam`}>
                                     <div className="flex mb-2 mt-2 p-2 gap-3 items-center w-full hover:bg-(--purpleOpacity) transition-colors duration-100 rounded-lg">
                                         <div className="bg-(--purple) w-1 min-h-10"></div>
                                         <ContentPasteOutlinedIcon sx={{ color: "var(--purple)" }} />

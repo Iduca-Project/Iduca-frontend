@@ -4,50 +4,51 @@ import { ROUTES } from "@/src/constants/routes";
 import { Button, Divider, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Snackbar, SnackbarCloseReason, TextField } from "@mui/material";
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import Link from "next/link";
-import { useState, FormEvent } from "react"; // 1. Importar o FormEvent
+import { useState, FormEvent } from "react";
 import { useRouter } from 'next/navigation';
-import { useAuth } from "@/src/contexts/AuthContext"; // 2. Importar nosso hook de autenticação
+import { useAuth } from "@/src/contexts/AuthContext";
 
 const Login = () => {
-    // Seus hooks de UI estão perfeitos!
     const [showPassword, setShowPassword] = useState(false);
     const [openReturn, setOpenReturn] = useState(false);
     const [messageReturn, setMessageReturn] = useState("");
 
-    // Hooks para os dados do formulário
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState(""); // Mudei de 'pass' para 'password' por consistência
+    const [password, setPassword] = useState("");
 
-    // Hooks do Next.js e do nosso Contexto de Auth
     const router = useRouter();
-    const { signIn } = useAuth(); // 3. Pegamos a função signIn do nosso contexto global
+    const { signIn } = useAuth();
 
-    // Funções do "olhinho" (sem mudanças)
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
     const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
 
-    // Função do Snackbar (sem mudanças)
     const handleClose = (event: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') return;
         setOpenReturn(false);
     };
 
-    // 4. Função de SUBMISSÃO do formulário (substituindo a antiga 'login')
     const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault(); // Previne que a página recarregue
+        event.preventDefault();
 
         try {
-            // Chama a função de login do nosso AuthContext
-            await signIn({ email, password });
-
-            // Se o login funcionou, mostra a mensagem de sucesso e redireciona
+            const { firstAccess, role } = await signIn({ email, password });
             setMessageReturn("Login bem sucedido!");
             setOpenReturn(true);
-            router.push(ROUTES.home);
+
+            console.log(role)
+
+            if (firstAccess) {
+                router.push(ROUTES.setInitialPassword);
+            } else if (role === 'admin') {
+                router.push(ROUTES.homeAdmin);
+            } else if (role === 'manager') {
+                router.push(ROUTES.homeManager);
+            } else {
+                router.push(ROUTES.home);
+            }
 
         } catch (error) {
-            // Se o signIn deu erro (ex: 401 do backend), o catch é ativado
             setMessageReturn("E-mail ou senha inválidos. Tente novamente.");
             setOpenReturn(true);
             console.error("Falha no login:", error);
@@ -55,7 +56,6 @@ const Login = () => {
     }
 
     return (
-        // 5. Envolvemos tudo em um <form> e usamos o onSubmit
         <form onSubmit={handleSubmit} className="w-screen h-screen gap-5 flex flex-col items-center p-2 md:py-20 py-10">
             <div className="flex flex-col items-center">
                 <h1 className="text-5xl text-(--text)" style={{ fontFamily: 'var(--jura)'}}>Iduca</h1>
@@ -84,7 +84,6 @@ const Login = () => {
                     </div>
                 </div>
                 <div className="bg-(--normalBlue) flex items-center justify-center w-full rounded-2xl hover:bg-(--normalBlueHover) text-white">
-                    {/* 6. O botão agora é do tipo 'submit' para ativar o formulário */}
                     <Button className="w-full" type="submit" disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit", color: "inherit"}}>Entrar</Button>
                 </div>
                 <Divider />

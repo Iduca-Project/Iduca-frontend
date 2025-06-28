@@ -4,6 +4,7 @@ import { Menu } from "@/src/components/menu";
 import { PdfUploader } from "@/src/components/pdfUploarder";
 import { cookies } from 'next/headers';
 import { ClientOnly } from "@/src/components/ClientOnly";
+import { LessonCompleter } from "@/src/components/LessonCompleter";
 
 type PageProps = {
     params: {
@@ -48,7 +49,7 @@ const ProjectPage = async ({ params }: PageProps) => {
     return (
         <>
             <ClientOnly>
-                <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} />
+            <Menu />
             </ClientOnly>
 
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
@@ -76,6 +77,8 @@ const ProjectPage = async ({ params }: PageProps) => {
                     </div>
                 </div>
             </div>
+
+            <LessonCompleter courseId={courseId} lessonId={lessonId} />
         </>
     )
 }

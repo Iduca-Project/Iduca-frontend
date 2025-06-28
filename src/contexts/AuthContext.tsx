@@ -3,45 +3,56 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import api from '../constants/api';
 import Cookies from 'js-cookie';
+import { jwtDecode } from "jwt-decode";
 
+interface IDecodedUser {
+    sub: string;
+    name: string; 
+    role: 'admin' | 'manager' | 'employee';
+}
 
 interface AuthContextData {
     signed: boolean;
-    token: string | null;
+    user: IDecodedUser | null;
     loading: boolean;
-    signIn(credentials: any): Promise<void>;
+    signIn(credentials: any): Promise<{ firstAccess: boolean; role: string; }>;
     signOut(): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<IDecodedUser | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storagedToken = localStorage.getItem('@Iduca:token');
-        if (storagedToken) {
-            setToken(storagedToken);
-            api.defaults.headers.Authorization = `Bearer ${storagedToken}`;
+        const token = Cookies.get('auth_token');
+        if (token) {
+            try {
+                api.defaults.headers.Authorization = `Bearer ${token}`;
+                const decodedUser = jwtDecode<IDecodedUser>(token);
+                setUser(decodedUser);
+            } catch (error) {
+                console.error("Token inválido no cookie, limpando:", error);
+                signOut();
+            }
         }
         setLoading(false);
     }, []);
 
-    async function signIn(credentials: any) {
+    async function signIn(credentials: any): Promise<{ firstAccess: boolean; role: string; }> {
         try {
             const response = await api.post('/auth/login', credentials);
             const { token: newToken, firstAccess } = response.data;
-
-            api.defaults.headers.Authorization = `Bearer ${newToken}`;
-            localStorage.setItem('@Iduca:token', newToken);
-            Cookies.set('auth_token', newToken, {
-                expires: 1/3,
-                path: '/',
-                secure: process.env.NODE_ENV === 'production'
-            });
             
-            setToken(newToken);
+            const decodedUser = jwtDecode<IDecodedUser>(newToken);
+            
+            api.defaults.headers.Authorization = `Bearer ${newToken}`;
+            Cookies.set('auth_token', newToken, { expires: 1/3, path: '/' });
+            
+            setUser(decodedUser);
+
+            return { firstAccess, role: decodedUser.role };
 
         } catch (error) {
             console.error("Falha no login", error);
@@ -50,13 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     function signOut() {
-        setToken(null);
-        localStorage.removeItem('@Iduca:token');
+        setUser(null);
         Cookies.remove('auth_token');
+        delete api.defaults.headers.Authorization;
     }
 
     return (
-        <AuthContext.Provider value={{ signed: !!token, token, signIn, signOut, loading }}>
+        // 3. O 'user' completo agora está disponível para toda a aplicação
+        <AuthContext.Provider value={{ signed: !!user, user, loading, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );

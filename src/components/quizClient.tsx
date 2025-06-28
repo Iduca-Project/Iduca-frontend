@@ -22,7 +22,8 @@ interface IQuestion {
 
 interface IQuizData {
   title: string;
-  questions: IQuestion[];
+  questions?: IQuestion[]; 
+  content?: IQuestion[];
   nextLesson?: { id: string; type: number; title: string; };
 }
 
@@ -36,17 +37,19 @@ interface IQuizResult {
 
 interface IQuizClientProps {
   courseId: string;
-  lessonId: string;
+  activityId: string;
   initialQuizData: IQuizData;
+  isExam?: boolean;
 }
 
-
-export const QuizClient = ({ courseId, lessonId, initialQuizData }: IQuizClientProps) => {
+export const QuizClient = ({ courseId, activityId, initialQuizData, isExam = false }: IQuizClientProps) => {
   const router = useRouter();
 
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [quizResult, setQuizResult] = useState<IQuizResult | null>(null);
+
+  const questionsToRender = initialQuizData.questions || initialQuizData.content || [];
 
   const handleSelect = (questionId: number, optionId: string) => {
     if (quizResult) return;
@@ -63,13 +66,18 @@ export const QuizClient = ({ courseId, lessonId, initialQuizData }: IQuizClientP
         }))
     };
 
+    const url = isExam 
+      ? `/test/${courseId}/submit`
+      : `/courses/${courseId}/lessons/${activityId}/submit`;
+
     try {
-        const url = `/courses/${courseId}/lessons/${lessonId}/submit`;
         const response = await api.post(url, submissionData);
         setQuizResult(response.data);
+        router.refresh();
     } catch (error: any) {
         console.error("Erro ao submeter o quiz:", error);
-        alert(error.response?.data?.message || "Ocorreu um erro.");
+        const errorMessage = error.response?.data?.message || "Ocorreu um erro ao enviar suas respostas.";
+        alert(errorMessage);
     } finally {
         setIsLoading(false);
     }
@@ -96,25 +104,25 @@ export const QuizClient = ({ courseId, lessonId, initialQuizData }: IQuizClientP
   return (
     <div className="flex flex-col md:p-10 p-3 rounded-2xl gap-10 items-center">
         <div className="flex flex-col w-full gap-6">
-            {initialQuizData.questions.map((q, index) => (
-            <div key={q.id} className="bg-(--card) shadow-(--shadow) rounded-xl p-6">
-                <p className="text-lg mb-4 text-(--text)">{index + 1}. {q.question}</p>
-                <ul className="flex flex-col gap-2">
-                {q.options.map(option => {
-                    const isSelected = answers[q.id] === option.id;
-                    return (
-                    <li
-                        key={option.id}
-                        onClick={() => handleSelect(q.id, option.id)}
-                        className={`flex px-4 py-2 rounded-md cursor-pointer transition duration-300 ${isSelected ? "bg-(--hoverWhite)" : "bg-(--lightGray)"} hover:bg-(--hoverWhite)`}
-                    >
-                        <span className="font-bold mr-2 text-(--text)">{option.id}.</span>
-                        <p className="text-(--text)">{option.text}</p>
-                    </li>
-                    );
-                })}
-                </ul>
-            </div>
+            {questionsToRender.map((q, index) => (
+                <div key={q.id} className="bg-(--card) shadow-(--shadow) rounded-xl p-6">
+                    <p className="text-lg mb-4 text-(--text)">{index + 1}. {q.question}</p>
+                    <ul className="flex flex-col gap-2">
+                        {q.options.map(option => {
+                            const isSelected = answers[q.id] === option.id;
+                            return (
+                                <li
+                                    key={option.id}
+                                    onClick={() => handleSelect(q.id, option.id)}
+                                    className={`flex items-center px-4 py-2 rounded-md cursor-pointer transition duration-300 ${isSelected ? "bg-(--hoverWhite)" : "bg-(--lightGray)"} hover:bg-(--hoverWhite)`}
+                                >
+                                    <span className="font-bold mr-2 text-(--text)">{option.id.toUpperCase()}.</span>
+                                    <p className="text-(--text)">{option.text}</p>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
             ))}
         </div>
 
