@@ -4,120 +4,110 @@ import { Menu } from "@/src/components/menu";
 import { CuteButton } from "@/src/components/cuteButton";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BusinessIcon from '@mui/icons-material/Business';
-
 import { CardCompany } from "@/src/components/cardCompany";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NotifyModal } from "@/src/components/notifyModal";
-import { TextField, Button, DialogActions, DialogContent, Box, FormControlLabel, Checkbox } from '@mui/material';
+import { TextField, Button, DialogActions, DialogContent, Box, Checkbox, FormControlLabel, CircularProgress, Snackbar } from '@mui/material';
+import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
+import api from "@/src/constants/api";
 
-interface Company {
-  id: number;
+
+// --- INTERFACES PARA OS DADOS ---
+
+interface ICompany {
+  id: string; // ID do MongoDB é string
   name: string;
 }
 
 const HomeAdmin = () => {
-    const [companies, setCompanies] = useState<Company[]>([
-      {
-        id: 1,
-        name: "Empresa Alfa",
-      },
-      {
-        id: 2,
-        name: "Beta Ltda",
-      }
-    ]);
+    // --- ESTADOS PARA OS DADOS E UI ---
+    const [companies, setCompanies] = useState<ICompany[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Estado para o modal e formulário
-    const [openAddModal, setOpenAddModal] = useState(false);
-    const [newCompanyName, setNewCompanyName] = useState('');
+    // --- ESTADOS PARA OS MODAIS ---
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const [newCollaborator, setNewCollaborator] = useState({
-        id: '',
-        name: '',
-        email: '',
-        isManager: false
-    });
+    const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+    
+    // Modal de Adicionar Empresa
+    const [openAddCompanyModal, setOpenAddCompanyModal] = useState(false);
+    const [newCompanyName, setNewCompanyName] = useState('');
 
-    // Funções do modal
-    const handleOpenAddModal = () => setOpenAddModal(true);
-    const handleCloseAddModal = () => {
-        setOpenAddModal(false);
-        setNewCompanyName('');
+    // Modal de Adicionar Gestor
+    const [openAddManagerModal, setOpenAddManagerModal] = useState(false);
+    const [newManager, setNewManager] = useState({ employeeId: '', name: '', email: '' });
+    const [newlyCreatedCompanyId, setNewlyCreatedCompanyId] = useState<string | null>(null);
+
+    // --- LÓGICA DE BUSCA DE DADOS ---
+    const fetchCompanies = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await api.get('/admin/companies');
+            setCompanies(response.data.companies);
+        } catch (err) {
+            console.error("Erro ao buscar empresas:", err);
+            setError("Não foi possível carregar as empresas.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
+    useEffect(() => {
+        fetchCompanies();
+    }, []); // Roda apenas uma vez ao carregar
+
+    // --- LÓGICA DOS MODAIS ---
+
+    // Adicionar Empresa
     const handleAddCompany = async () => {
         if (!newCompanyName.trim()) {
-            alert('Por favor, insira um nome para a empresa');
+            setSnackbar({ open: true, message: 'O nome da empresa é obrigatório.' });
             return;
         }
-
         setIsSubmitting(true);
-        
         try {
-            // Simulando uma chamada API
-            const newCompany = {
-                id: companies.length + 1, // Isso seria gerado pelo backend na prática
-                name: newCompanyName.trim()
-            };
-
-            // Adiciona a nova empresa ao estado (simulando resposta da API)
-            setCompanies([...companies, newCompany]);
+            const response = await api.post('/admin/companies', { name: newCompanyName.trim() });
+            setNewlyCreatedCompanyId(response.data.companyId); // Salva o ID da nova empresa
             
-            // Fecha o modal e limpa o formulário
-            handleCloseAddModal();
-            
-            // Aqui você poderia adicionar a lógica para abrir outro modal
-            // para adicionar o gestor responsável, se necessário
-            // Ex: setShowAddManagerModal(true); setSelectedCompany(newCompany.id);
-            handleOpenModal();
-
-        } catch (error) {
-            console.error('Erro ao adicionar empresa:', error);
-            alert('Ocorreu um erro ao adicionar a empresa');
+            setSnackbar({ open: true, message: "Empresa criada! Agora, cadastre o gestor." });
+            setOpenAddCompanyModal(false); // Fecha o modal de empresa
+            setOpenAddManagerModal(true);  // Abre o modal de gestor
+            fetchCompanies(); // Atualiza a lista de empresas em segundo plano
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Erro ao adicionar empresa.';
+            setSnackbar({ open: true, message: errorMessage });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-        // Funções do modal
-    const handleOpenModal = () => setOpenModal(true);
-    
-    const handleCloseModal = () => {
-        setOpenModal(false);
-        setNewCollaborator({
-        id: '',
-        name: '',
-        email: '',
-        isManager: false
-        });
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        setNewCollaborator(prev => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value
-        }));
-    };
-
-    const handleSubmit = () => {
-        if (!newCollaborator.id || !newCollaborator.name || !newCollaborator.email) {
-        alert("Preencha todos os campos obrigatórios");
-        return;
+    // Adicionar Gestor
+    const handleAddManager = async () => {
+        if (!newManager.employeeId || !newManager.name || !newManager.email) {
+            setSnackbar({ open: true, message: "Preencha todos os campos do gestor." });
+            return;
         }
-
-        // Aqui você faria a chamada API para cadastrar
-        console.log("Novo colaborador:", {
-        ...newCollaborator,
-        id: Number(newCollaborator.id),
-        coursesCompleted: 0,
-        coursesInProgress: 0,
-        averageScore: 0,
-        topCategory: ""
-        });
-
-        handleCloseModal();
+        setIsSubmitting(true);
+        try {
+            // Chama o endpoint de criar usuário, que já tem a lógica para admin
+            await api.post('/users', {
+                ...newManager,
+                isManager: true, // Admin sempre cria um manager
+                companyId: newlyCreatedCompanyId
+            });
+            setSnackbar({ open: true, message: "Gestor cadastrado com sucesso!" });
+            setOpenAddManagerModal(false); // Fecha o modal
+            // Limpa os formulários
+            setNewCompanyName('');
+            setNewManager({ employeeId: '', name: '', email: ''});
+            setNewlyCreatedCompanyId(null);
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Erro ao cadastrar gestor.';
+            setSnackbar({ open: true, message: errorMessage });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -150,121 +140,63 @@ const HomeAdmin = () => {
                 <div className="flex flex-col gap-4">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold text-(--text)">Empresas</h1>
-                        <CuteButton 
-                            text="Adicionar empresa" 
-                            icon={ArrowForwardIcon} 
-                            onClick={handleOpenAddModal}
-                        />
+                        <CuteButton text="Adicionar empresa" icon={ArrowForwardIcon} onClick={() => setOpenAddCompanyModal(true)} />
                     </div>
-                    <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-                        {companies.map((company) => (
-                            <CardCompany 
-                                key={company.id}
-                                id={company.id}
-                                name={company.name}
-                            />
-                        ))}
-                    </div>
+                    {isLoading ? (
+                        <div className="flex justify-center p-10"><CircularProgress /></div>
+                    ) : error ? (
+                        <p className="text-red-500 text-center">{error}</p>
+                    ) : (
+                        <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
+                            {companies.map((company) => (
+                                <CardCompany key={company.id} id={company.id} name={company.name} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Modal para adicionar nova empresa */}
-            <NotifyModal 
-                title="Adicionar Nova Empresa" 
-                open={openAddModal} 
-                onClose={handleCloseAddModal}
-            >
+            <NotifyModal title="Adicionar Nova Empresa" open={openAddCompanyModal} onClose={() => setOpenAddCompanyModal(false)}>
                 <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
+                    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
                         <TextField
                             label="Nome da Empresa"
                             variant="outlined"
                             fullWidth
                             value={newCompanyName}
                             onChange={(e) => setNewCompanyName(e.target.value)}
-                            sx={{ marginBottom: 2 }}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button 
-                        onClick={handleCloseAddModal} 
-                        color="primary"
-                        disabled={isSubmitting}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button 
-                        onClick={handleAddCompany} 
-                        color="primary"
-                        variant="contained"
-                        disabled={!newCompanyName.trim() || isSubmitting}
-                    >
-                        {isSubmitting ? 'Adicionando...' : 'Adicionar'}
+                    <Button onClick={() => setOpenAddCompanyModal(false)} disabled={isSubmitting}>Cancelar</Button>
+                    <Button onClick={handleAddCompany} color="primary" variant="contained" disabled={!newCompanyName.trim() || isSubmitting}>
+                        {isSubmitting ? 'Adicionando...' : 'Próximo'}
                     </Button>
                 </DialogActions>
             </NotifyModal>
 
-            {/* Modal de cadastro */}
-            <NotifyModal title="Cadastrar Gestor da Empresa" open={openModal} onClose={handleCloseModal}>
+            {/* Modal para cadastrar o gestor */}
+            <NotifyModal title="Cadastrar Gestor da Empresa" open={openAddManagerModal} onClose={() => setOpenAddManagerModal(false)}>
                 <DialogContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
-                    <TextField
-                    name="id"
-                    label="ID do Funcionário *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.id}
-                    onChange={handleInputChange}
-                    type="number"
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                    />
-                    <TextField
-                    name="name"
-                    label="Nome Completo *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.name}
-                    onChange={handleInputChange}
-                    />
-                    <TextField
-                    name="email"
-                    label="Email Corporativo *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.email}
-                    onChange={handleInputChange}
-                    type="email"
-                    />
-                    <FormControlLabel
-                    control={
-                        <Checkbox
-                        name="isManager"
-                        checked={newCollaborator.isManager}
-                        onChange={handleInputChange}
-                        color="primary"
-                        />
-                    }
-                    label="É gestor?"
-                    />
-                    <small style={{ color: 'gray' }}>* Campos obrigatórios</small>
-                </Box>
+                    <p className='text-(--gray) mb-4'>Agora cadastre o gestor principal para a empresa "{newCompanyName}".</p>
+                    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <TextField name="employeeId" label="ID do Funcionário *" variant="outlined" fullWidth value={newManager.employeeId} onChange={(e) => setNewManager({...newManager, employeeId: e.target.value})} />
+                        <TextField name="name" label="Nome Completo *" variant="outlined" fullWidth value={newManager.name} onChange={(e) => setNewManager({...newManager, name: e.target.value})} />
+                        <TextField name="email" label="Email Corporativo *" variant="outlined" fullWidth value={newManager.email} onChange={(e) => setNewManager({...newManager, email: e.target.value})} type="email" />
+                        <small style={{ color: 'gray' }}>* Campos obrigatórios</small>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={handleCloseModal} color="primary">
-                    Cancelar
-                </Button>
-                <Button 
-                    onClick={handleSubmit} 
-                    color="primary"
-                    variant="contained"
-                    disabled={!newCollaborator.id || !newCollaborator.name || !newCollaborator.email}
-                >
-                    Cadastrar
-                </Button>
+                    <Button onClick={() => setOpenAddManagerModal(false)} disabled={isSubmitting}>Cancelar</Button>
+                    <Button onClick={handleAddManager} color="primary" variant="contained" disabled={isSubmitting || !newManager.employeeId || !newManager.name || !newManager.email}>
+                        {isSubmitting ? 'Cadastrando...' : 'Cadastrar Gestor'}
+                    </Button>
                 </DialogActions>
             </NotifyModal>
             
+            <Snackbar open={snackbar.open} autoHideDuration={5000} onClose={() => setSnackbar({...snackbar, open: false})} message={snackbar.message} />
         </>
     )
 }

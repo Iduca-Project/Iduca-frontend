@@ -2,7 +2,7 @@ import { Card, CardContent, Typography, Button } from "@mui/material";
 import BusinessIcon from '@mui/icons-material/Business';
 
 interface CardCompanyProps {
-  id: number;
+  id: string;
   name: string;
 }
 
