@@ -49,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             api.defaults.headers.Authorization = `Bearer ${newToken}`;
             Cookies.set('auth_token', newToken, { expires: 1/3, path: '/' });
+            localStorage.setItem("role", decodedUser.role);
+            localStorage.setItem("Token", newToken)
             
             setUser(decodedUser);
 
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function signOut() {
         setUser(null);
         Cookies.remove('auth_token');
+        localStorage.clear();
         delete api.defaults.headers.Authorization;
     }
 

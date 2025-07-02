@@ -1,39 +1,53 @@
 import { Menu } from "@/src/components/menu";
 import Image from "next/image";
-import certificado from "../../../../public/image/image.png";
 import { CuteButton } from "@/src/components/cuteButton";
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import { BackButton } from "@/src/components/backButton";
+import { ClientOnly } from "@/src/components/ClientOnly";
+import Link from "next/link";
 
-interface ICertificate {
+interface ICertificatePageProps {
   params: {
-    certificateId: string;
+    id: string;
   };
 }
 
-const Certificate = async ({ params }: ICertificate) => {
-  const { certificateId } = params;
+const CertificatePage = ({ params }: ICertificatePageProps) => {
+  const { id: courseId } = params;
+
+  const imageUrl = `/api/certificate/${courseId}/image`;
+  
+  const pdfUrl = `/api/certificate/${courseId}/pdf`;
+
   return (
     <>
-      <Menu op1="Dashboard" op2="Cursos" op3="Calendário" op4="Perfil" />
+      <Menu />
 
       <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
-        {/* Title */}
         <div className="flex md:flex-row flex-col gap-5 items-center p-1 md:items-start">
           <BackButton />
           <h1 className="md:text-2xl text-xl font-bold text-(--text) text-center">
-            Certificado do Curso de Marketing Digital {certificateId}
+            Seu Certificado de Conclusão
           </h1>
         </div>
 
-        {/* Certificate */}
         <div className="flex bg-(--card) xl:max-w-8/12 border border-(--stroke) flex-col p-5 rounded-2xl self-center items-center gap-4 shadow-(--shadow)">
-          <Image src={certificado} alt="certificado" width={1000} height={1000} priority />
-          <CuteButton icon={DownloadForOfflineOutlinedIcon} text="Baixar Certificado" classname="self-end" />
+          
+          <Image 
+            src={imageUrl} 
+            alt="Imagem do certificado" 
+            width={1000} 
+            height={707}
+            priority 
+          />
+
+          <Link href={pdfUrl} download={`certificado-iduca-${courseId}.pdf`} target="_blank" rel="noopener noreferrer">
+            <CuteButton icon={DownloadForOfflineOutlinedIcon} text="Baixar Certificado em PDF" classname="self-end" />
+          </Link>
         </div>
       </div>
     </>
   );
 };
 
-export default Certificate;
+export default CertificatePage;

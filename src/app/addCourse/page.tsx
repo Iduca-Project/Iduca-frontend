@@ -4,13 +4,18 @@ import { Menu } from "@/src/components/menu";
 import { CuteButton } from "@/src/components/cuteButton";
 import { useRouter } from 'next/navigation';
 import { ROUTES } from "@/src/constants/routes";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NotifyModal } from "@/src/components/notifyModal";
 import { TextField, Button, DialogActions, DialogContent, Box, Select, MenuItem, InputLabel, FormControl, Checkbox, FormControlLabel, SelectChangeEvent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import api from "@/src/constants/api";
 
-const CATEGORIES = ["Ferramentas", "Programação", "Design", "Gestão", "Marketing"];
+
+interface ICategory {
+    id: number;
+    name: string;
+}
 
 const AddCourse = () => {
     const router = useRouter();
@@ -18,7 +23,21 @@ const AddCourse = () => {
     const [openContentModal, setOpenContentModal] = useState(false);
     const [openExamModal, setOpenExamModal] = useState(false);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [titleCourse, setTitleCourse] = useState<string>("");
     
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await api.get('/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar categorias:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+        
     // Estados para atividade escrita
     const [textContent, setTextContent] = useState("");
     const [textContentBlocks, setTextContentBlocks] = useState<Array<{
@@ -99,9 +118,6 @@ const AddCourse = () => {
     const handleCourseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<any>) => {
         const { name, value } = e.target;
         
-        // A lógica para checkbox é um pouco diferente, então podemos tratar separadamente
-        // ou manter o tratamento genérico se o `value` do checkbox for o que você precisa.
-        // O seu tratamento atual já é bom.
         if (e.target instanceof HTMLInputElement && e.target.type === 'checkbox') {
             setCourseData(prev => ({
                 ...prev,
@@ -290,12 +306,10 @@ const AddCourse = () => {
         }
 
         try {
-            // Aqui você faria a chamada API para criar o curso
-            console.log("Dados do curso a serem enviados:", courseData);
+            const response = await api.post('/admin/courses', courseData);
             
-            // Simulando resposta da API
-            alert("Curso criado com sucesso!");
-            router.push(ROUTES.coursesManager);
+            console.log(response)
+            // router.push(ROUTES.coursesManager);
             
         } catch (error) {
             console.error("Erro ao criar curso:", error);
@@ -535,12 +549,13 @@ const AddCourse = () => {
                             <Select
                                 name="category"
                                 value={courseData.category}
-                                // 👇 Use a forma funcional aqui também
                                 onChange={handleCourseChange}
                                 label="Categoria *"
                             >
-                                {CATEGORIES.map(cat => (
-                                    <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                                {categories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>

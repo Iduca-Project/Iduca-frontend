@@ -7,13 +7,12 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { CardCompany } from "@/src/components/cardCompany";
 import { useState, useEffect } from 'react';
 import { NotifyModal } from "@/src/components/notifyModal";
-import { TextField, Button, DialogActions, DialogContent, Box, Checkbox, FormControlLabel, CircularProgress, Snackbar } from '@mui/material';
+import { TextField, Button, DialogActions, DialogContent, Box, CircularProgress, Snackbar } from '@mui/material';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 import api from "@/src/constants/api";
 
 
-// --- INTERFACES PARA OS DADOS ---
-
+// --- INTERFACE PARA OS DADOS ---
 interface ICompany {
   id: string; // ID do MongoDB é string
   name: string;
@@ -38,7 +37,6 @@ const HomeAdmin = () => {
     const [newManager, setNewManager] = useState({ employeeId: '', name: '', email: '' });
     const [newlyCreatedCompanyId, setNewlyCreatedCompanyId] = useState<string | null>(null);
 
-    // --- LÓGICA DE BUSCA DE DADOS ---
     const fetchCompanies = async () => {
         setIsLoading(true);
         setError(null);
@@ -53,13 +51,29 @@ const HomeAdmin = () => {
         }
     };
 
+    const handleDeleteCompany = async (companyId: string) => {
+        if (!window.confirm("Tem certeza que deseja deletar esta empresa e todos os seus colaboradores? Esta ação não pode ser desfeita.")) {
+            return;
+        }
+
+        try {
+            await api.delete(`/admin/companies/${companyId}`);
+            setSnackbar({ open: true, message: "Empresa deletada com sucesso!" });
+            
+            setCompanies(prevCompanies => prevCompanies.filter(company => company.id !== companyId));
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Erro ao deletar empresa.';
+            setSnackbar({ open: true, message: errorMessage });
+            console.error("Erro ao deletar empresa:", error);
+        }
+    };
+
+
     useEffect(() => {
         fetchCompanies();
-    }, []); // Roda apenas uma vez ao carregar
+    }, []);
 
-    // --- LÓGICA DOS MODAIS ---
-
-    // Adicionar Empresa
     const handleAddCompany = async () => {
         if (!newCompanyName.trim()) {
             setSnackbar({ open: true, message: 'O nome da empresa é obrigatório.' });
@@ -68,21 +82,21 @@ const HomeAdmin = () => {
         setIsSubmitting(true);
         try {
             const response = await api.post('/admin/companies', { name: newCompanyName.trim() });
-            setNewlyCreatedCompanyId(response.data.companyId); // Salva o ID da nova empresa
+            setNewlyCreatedCompanyId(response.data.companyId);
             
             setSnackbar({ open: true, message: "Empresa criada! Agora, cadastre o gestor." });
-            setOpenAddCompanyModal(false); // Fecha o modal de empresa
-            setOpenAddManagerModal(true);  // Abre o modal de gestor
-            fetchCompanies(); // Atualiza a lista de empresas em segundo plano
+            setOpenAddCompanyModal(false);
+            setOpenAddManagerModal(true);
+            fetchCompanies();
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Erro ao adicionar empresa.';
             setSnackbar({ open: true, message: errorMessage });
         } finally {
             setIsSubmitting(false);
+            setNewCompanyName(''); // Limpa o campo após a tentativa
         }
     };
 
-    // Adicionar Gestor
     const handleAddManager = async () => {
         if (!newManager.employeeId || !newManager.name || !newManager.email) {
             setSnackbar({ open: true, message: "Preencha todos os campos do gestor." });
@@ -90,16 +104,14 @@ const HomeAdmin = () => {
         }
         setIsSubmitting(true);
         try {
-            // Chama o endpoint de criar usuário, que já tem a lógica para admin
-            await api.post('/users', {
+            await api.post('/user', {
                 ...newManager,
-                isManager: true, // Admin sempre cria um manager
+                isManager: true,
                 companyId: newlyCreatedCompanyId
             });
             setSnackbar({ open: true, message: "Gestor cadastrado com sucesso!" });
-            setOpenAddManagerModal(false); // Fecha o modal
-            // Limpa os formulários
-            setNewCompanyName('');
+            setOpenAddManagerModal(false);
+
             setNewManager({ employeeId: '', name: '', email: ''});
             setNewlyCreatedCompanyId(null);
         } catch (error: any) {
@@ -140,7 +152,11 @@ const HomeAdmin = () => {
                 <div className="flex flex-col gap-4">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold text-(--text)">Empresas</h1>
-                        <CuteButton text="Adicionar empresa" icon={ArrowForwardIcon} onClick={() => setOpenAddCompanyModal(true)} />
+                        <CuteButton 
+                            text="Adicionar empresa" 
+                            icon={ArrowForwardIcon} 
+                            onClick={() => setOpenAddCompanyModal(true)}
+                        />
                     </div>
                     {isLoading ? (
                         <div className="flex justify-center p-10"><CircularProgress /></div>
@@ -149,7 +165,12 @@ const HomeAdmin = () => {
                     ) : (
                         <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
                             {companies.map((company) => (
-                                <CardCompany key={company.id} id={company.id} name={company.name} />
+                                <CardCompany 
+                                    key={company.id}
+                                    id={company.id}
+                                    name={company.name}
+                                    onDelete={handleDeleteCompany}
+                                />
                             ))}
                         </div>
                     )}
@@ -157,7 +178,11 @@ const HomeAdmin = () => {
             </div>
 
             {/* Modal para adicionar nova empresa */}
-            <NotifyModal title="Adicionar Nova Empresa" open={openAddCompanyModal} onClose={() => setOpenAddCompanyModal(false)}>
+            <NotifyModal 
+                title="Adicionar Nova Empresa" 
+                open={openAddCompanyModal} 
+                onClose={() => setOpenAddCompanyModal(false)}
+            >
                 <DialogContent>
                     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
                         <TextField
@@ -166,6 +191,7 @@ const HomeAdmin = () => {
                             fullWidth
                             value={newCompanyName}
                             onChange={(e) => setNewCompanyName(e.target.value)}
+                            sx={{ marginBottom: 2 }}
                         />
                     </Box>
                 </DialogContent>
@@ -180,7 +206,7 @@ const HomeAdmin = () => {
             {/* Modal para cadastrar o gestor */}
             <NotifyModal title="Cadastrar Gestor da Empresa" open={openAddManagerModal} onClose={() => setOpenAddManagerModal(false)}>
                 <DialogContent>
-                    <p className='text-(--gray) mb-4'>Agora cadastre o gestor principal para a empresa "{newCompanyName}".</p>
+                    <p className='text-(--gray) mb-4'>Agora cadastre o gestor principal para a empresa.</p>
                     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <TextField name="employeeId" label="ID do Funcionário *" variant="outlined" fullWidth value={newManager.employeeId} onChange={(e) => setNewManager({...newManager, employeeId: e.target.value})} />
                         <TextField name="name" label="Nome Completo *" variant="outlined" fullWidth value={newManager.name} onChange={(e) => setNewManager({...newManager, name: e.target.value})} />
@@ -196,7 +222,7 @@ const HomeAdmin = () => {
                 </DialogActions>
             </NotifyModal>
             
-            <Snackbar open={snackbar.open} autoHideDuration={5000} onClose={() => setSnackbar({...snackbar, open: false})} message={snackbar.message} />
+            <Snackbar open={snackbar.open} autoHideDuration={5000} onClose={() => setSnackbar({...snackbar, open: false})} message={snackbar.message} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} />
         </>
     )
 }

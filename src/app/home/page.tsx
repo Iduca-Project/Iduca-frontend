@@ -93,7 +93,7 @@ const Home = () => {
 
     return (
         <>
-            <Menu op1={"Dashboard"} op2={"Cursos"} op3={"Calendário"} op4={"Perfil"} />
+            <Menu/>
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                 {/* Title */}
                 <div className="flex flex-col gap-1 items-center p-1 md:items-start">
@@ -118,7 +118,7 @@ const Home = () => {
                                 <ClassOutlinedIcon sx={{ color: "var(--blue)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">{progressData?.totalCourses || 0}</h1>
+                                <h1 className="font-bold text-(--text)">{progressData?.totalCourses|| 0}</h1>
                                 <p className="text-(--gray)">Total de cursos</p>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ const Home = () => {
                                 <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">{progressData?.completeCourses || 0}</h1>
+                                <h1 className="font-bold text-(--text)">{1}</h1>
                                 <p className="text-(--gray)">Completos</p>
                             </div>
                         </div>

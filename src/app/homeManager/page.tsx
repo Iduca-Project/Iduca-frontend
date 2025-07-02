@@ -79,8 +79,7 @@ const HomeManager = () => {
     if (isLoading) {
         return (
             <>
-                            <Menu />
-
+                <Menu />
                 <div className="text-center p-20">Carregando dashboard...</div>
             </>
         );
@@ -89,8 +88,7 @@ const HomeManager = () => {
     if (error) {
         return (
             <>
-                            <Menu />
-
+                <Menu />
                 <div className="text-center p-20 text-red-500">{error}</div>
             </>
         );
@@ -98,8 +96,7 @@ const HomeManager = () => {
     
     return (
         <>
-                        <Menu />
-
+            <Menu />
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                 {/* Title */}
                 <div className="flex flex-col gap-1 items-center p-1 md:items-start">
