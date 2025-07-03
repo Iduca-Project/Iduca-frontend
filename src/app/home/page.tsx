@@ -35,6 +35,7 @@ interface ICourseInProgress {
 
 interface ICalendarEvent {
     title: string;
+    description: string;
     date: Date;
     type: number;
 }
@@ -138,7 +139,7 @@ const Home = () => {
                                 <CheckCircleOutlineOutlinedIcon sx={{ color: "var(--green)" }}/>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <h1 className="font-bold text-(--text)">{1}</h1>
+                                <h1 className="font-bold text-(--text)">{progressData?.completeCourses || 0}</h1>
                                 <p className="text-(--gray)">Completos</p>
                             </div>
                         </div>
@@ -169,13 +170,13 @@ const Home = () => {
                 </div>
 
                 {/* Calendário */}
-                <div className="flex flex-col gap-4 mb-10">
+                {/* <div className="flex flex-col gap-4 mb-10">
                     <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
                         <h1 className="md:text-2xl text-xl font-bold text-(--text)">Calendário de aulas</h1>
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.calendar)}></CuteButton>
                     </div>
                     <CalendarComp events={calendarEvents}/>
-                </div>
+                </div> */}
             </div>
         </>
     )

@@ -46,6 +46,9 @@ export const CalendarComp = ({ events }: CalendarProps) => {
     }
   });
 
+  const addOneDay = (date: Date) => new Date(date.getTime() + 24 * 60 * 60 * 1000);
+
+
   // AQUI ESTÁ A CORREÇÃO: Removemos o <Date> genérico de PickersDayProps
   const CustomDay = ( props: PickersDayProps & { eventTypesByDate: Map<string, number[]> } ) => {
     const { day, eventTypesByDate, ...other } = props;
@@ -72,7 +75,7 @@ export const CalendarComp = ({ events }: CalendarProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
       <div className="flex lg:flex-row flex-col w-full justify-between gap-3 items-start">
-        <div className="bg-(--card) border border-(--stroke) shadow-[var(--shadow)] rounded-2xl p-2 max-w-96 w-full">
+        <div className="bg-(--card) border border-(--stroke) shadow-[var(--shadow)] rounded-2xl p-2 max-w-96 min-h-[400px] w-full">
           <StaticDatePicker
             value={selectedDate}
             onChange={(newValue) => setSelectedDate(newValue)}
@@ -103,7 +106,7 @@ export const CalendarComp = ({ events }: CalendarProps) => {
                 <ListItem key={i} sx={{ px: 0 }}>
                   <Card
                     title={ev.description}
-                    description={new Date(ev.date).toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}
+                    description={addOneDay(new Date(ev.date)).toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}
                     color={
                       ev.type === 1 ? "bg-[var(--purple)]"
                       : ev.type === 2 ? "bg-[var(--yellow)]"

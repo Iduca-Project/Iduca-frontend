@@ -273,13 +273,13 @@ const Profile = () => {
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xl font-bold text-(--text)">Conquistas</h1>
                             <div className="flex flex-row gap-6 items-center justify-center">
-                                <div className="flex bg-(--lightGray) border border-(--stroke) shadow-(--shadow) rounded-2xl p-4 py-8 items-center gap-3 flex-col justify-center w-52">
+                                <div className="flex h-32 bg-(--lightGray) border border-(--stroke) shadow-(--shadow) rounded-2xl p-4 py-8 items-center gap-3 flex-col justify-center w-52">
                                     <div className="flex items-center justify-center p-1 bg-(--greenOpacity) rounded-full">
                                         <EmojiEventsOutlinedIcon sx={{ color: "var(--green)" }}/>
                                     </div>
                                     <h1 className="text-(--gray) text-center">{profileData.completedCourses} cursos finalizados</h1>
                                 </div>
-                                <div className="flex bg-(--lightGray) border border-(--stroke) shadow-(--shadow) rounded-2xl p-4 py-8 items-center gap-3 flex-col justify-center w-52">
+                                <div className="flex h-32 bg-(--lightGray) border border-(--stroke) shadow-(--shadow) rounded-2xl p-4 py-8 items-center gap-3 flex-col justify-center w-52">
                                     <div className="flex items-center justify-center p-1 bg-(--yellowOpacity) rounded-full">
                                         <StarBorderOutlinedIcon sx={{ color: "var(--yellow)" }}/>
                                     </div>
