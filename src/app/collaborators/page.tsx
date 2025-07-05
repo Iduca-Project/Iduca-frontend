@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Button, 
@@ -30,57 +30,66 @@ import { Menu } from "@/src/components/menu";
 import { CuteButton } from "@/src/components/cuteButton";
 import { NotifyModal } from "@/src/components/notifyModal";
 import { ROUTES } from "@/src/constants/routes";
+import axios from 'axios';
 
-interface Collaborator {
-  id: number;
-  name: string;
-  email: string;
-  isManager: boolean;
-  coursesCompleted: number;
-  coursesInProgress: number;
-  averageScore: number;
-  topCategory: string;
-}
+  interface Collaborator {
+    id: number;
+    name: string;
+    email: string;
+    isManager: boolean;
+    coursesCount: number;
+    coursesInProgress: number;
+    averageScore: number;
+    topCategory: string;
+  }
 
-const collaboratorsExample: Collaborator[] = [
-  {
-    id: 1,
-    name: "João Silva",
-    email: "joao.silva@empresa.com",
-    isManager: false,
-    coursesCompleted: 12,
-    coursesInProgress: 3,
-    averageScore: 8.7,
-    topCategory: "Desenvolvimento Web"
-  },
-  {
-    id: 2,
-    name: "Maria Oliveira",
-    email: "maria.oliveira@empresa.com",
-    isManager: true,
-    coursesCompleted: 8,
-    coursesInProgress: 2,
-    averageScore: 9.2,
-    topCategory: "Data Science"
-  },
-  // ... outros colaboradores ...
-];
+  const Collaborators = () => {
+    const [token, setToken] = useState<string | null>(null);
+    const router = useRouter();
+    const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+    const [sortConfig, setSortConfig] = useState<{ 
+      key: keyof Collaborator; 
+      direction: 'ascending' | 'descending' 
+    } | null>(null);
+    
+    const [searchTerm, setSearchTerm] = useState('');
+    const [openModal, setOpenModal] = useState(false);
+    const [newCollaborator, setNewCollaborator] = useState({
+      id: '',
+      name: '',
+      email: '',
+      isManager: false
+    });
 
-const Collaborators = () => {
-  const router = useRouter();
-  const [sortConfig, setSortConfig] = useState<{ 
-    key: keyof Collaborator; 
-    direction: 'ascending' | 'descending' 
-  } | null>(null);
+    useEffect(() => {
+      const storedToken = localStorage.getItem("Token");
+      setToken(storedToken);
+
+      console.log("Token do localStorage:", storedToken);
+
+      const fetchCollaborators = async () => {
+          try {
+            const response = await axios.get("http://localhost:5284/api/manager/team",
+              {
+                headers: {
+                  Authorization: `Bearer ${storedToken}`,
+                }
+              }
+            );
+            const data = Array.isArray(response.data.team) ? response.data.team : [];
+            setCollaborators(data);
+            console.log("Colaboradores recebidos:", data);
+          } catch (error) {
+            console.error("Erro ao buscar colaboradores:", error);
+            setCollaborators([]);
+          }
+        };
+
+        if (storedToken) {
+          fetchCollaborators();
+        }
+    }, []);
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [openModal, setOpenModal] = useState(false);
-  const [newCollaborator, setNewCollaborator] = useState({
-    id: '',
-    name: '',
-    email: '',
-    isManager: false
-  });
 
   // Funções do modal
   const handleOpenModal = () => setOpenModal(true);
@@ -103,23 +112,43 @@ const Collaborators = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!newCollaborator.id || !newCollaborator.name || !newCollaborator.email) {
       alert("Preencha todos os campos obrigatórios");
       return;
     }
 
-    // Aqui você faria a chamada API para cadastrar
-    console.log("Novo colaborador:", {
-      ...newCollaborator,
-      id: Number(newCollaborator.id),
-      coursesCompleted: 0,
-      coursesInProgress: 0,
-      averageScore: 0,
-      topCategory: ""
-    });
+    if (!token) {
+      alert("Token não encontrado. Faça login novamente.");
+      return;
+    }
 
-    handleCloseModal();
+    try {
+      const response = await axios.post(
+        "http://localhost:5284/api/users", 
+        { 
+          Name: newCollaborator.name,
+          Identity: newCollaborator.id,
+          Email: newCollaborator.email,
+          Password: newCollaborator.id,
+          IsAdmin: false
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      
+      console.log("Colaborador criado com sucesso:", response.data);
+      handleCloseModal();
+      
+      // Recarregar a lista de colaboradores
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao criar colaborador:", error);
+      alert("Erro ao criar colaborador. Tente novamente.");
+    }
   };
 
   // Funções de ordenação
@@ -139,14 +168,16 @@ const Collaborators = () => {
   };
 
   // Função de filtro
-  const filteredCollaborators = collaboratorsExample.filter(collaborator => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      collaborator.name.toLowerCase().includes(searchLower) ||
-      collaborator.email.toLowerCase().includes(searchLower) ||
-      collaborator.topCategory.toLowerCase().includes(searchLower)
-    );
-  });
+  const filteredCollaborators = Array.isArray(collaborators) 
+    ? collaborators.filter(collaborator => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          collaborator.name.toLowerCase().includes(searchLower) ||
+          collaborator.email.toLowerCase().includes(searchLower)
+          // collaborator.topCategory.toLowerCase().includes(searchLower)
+        );
+      })
+    : [];
 
   // Aplicar ordenação
   const sortedCollaborators = [...filteredCollaborators];
@@ -324,9 +355,9 @@ const Collaborators = () => {
                   <TableCell align="center">{row.id}</TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
-                  <TableCell align="center">{row.coursesCompleted}</TableCell>
-                  <TableCell align="center">{row.coursesInProgress}</TableCell>
-                  <TableCell align="center">{row.averageScore.toFixed(1)}</TableCell>
+                  <TableCell align="center">{row.coursesCount ?? 0}</TableCell>
+                  <TableCell align="center">{row.coursesInProgress ?? 0}</TableCell>
+                  {/* <TableCell align="center">{row.averageScore.toFixed(1)}</TableCell> ARRUMAR DEPOIS */}
                   <TableCell align="center">{row.topCategory}</TableCell>
                   <TableCell align="center">
                     <Button onClick={() => router.push(`/collaborators/${row.id}`)}>

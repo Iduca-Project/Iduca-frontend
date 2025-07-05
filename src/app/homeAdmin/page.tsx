@@ -127,12 +127,13 @@ const HomeAdmin = () => {
 
     const handleSubmit = async () => {
         if (!newCollaborator.identity || !newCollaborator.name || !newCollaborator.email) {
-        alert("Preencha todos os campos obrigatórios");
-        return;
+            alert("Preencha todos os campos obrigatórios");
+            return;
         }
+
         console.log(specifyCompanyId)
-        // Aqui você faria a chamada API para cadastrar
-        const response = await axios.post(
+
+        const response = await axios.post (
                 "http://localhost:5284/api/users", 
                 { 
                     Name: newCollaborator.name,
@@ -149,13 +150,13 @@ const HomeAdmin = () => {
             );
 
 
-        console.log("Novo colaborador:", {
-        ...newCollaborator,
-        identity: Number(newCollaborator.identity),
-        coursesCompleted: 0,
-        coursesInProgress: 0,
-        averageScore: 0,
-        topCategory: ""
+            console.log("Novo colaborador:", {
+            ...newCollaborator,
+            identity: Number(newCollaborator.identity),
+            coursesCompleted: 0,
+            coursesInProgress: 0,
+            averageScore: 0,
+            topCategory: ""
         });
 
         handleCloseModal();
@@ -251,30 +252,30 @@ const HomeAdmin = () => {
                 <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
                     <TextField
-                    name="identity"
-                    label="Código do Funcionário *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.identity}
-                    onChange={handleInputChange}
-                    // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        name="identity"
+                        label="Código do Funcionário *"
+                        variant="outlined"
+                        fullWidth
+                        value={newCollaborator.identity}
+                        onChange={handleInputChange}
+                        // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                     />
                     <TextField
-                    name="name"
-                    label="Nome Completo *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.name}
-                    onChange={handleInputChange}
+                        name="name"
+                        label="Nome Completo *"
+                        variant="outlined"
+                        fullWidth
+                        value={newCollaborator.name}
+                        onChange={handleInputChange}
                     />
                     <TextField
-                    name="email"
-                    label="Email Corporativo *"
-                    variant="outlined"
-                    fullWidth
-                    value={newCollaborator.email}
-                    onChange={handleInputChange}
-                    type="email"
+                        name="email"
+                        label="Email Corporativo *"
+                        variant="outlined"
+                        fullWidth
+                        value={newCollaborator.email}
+                        onChange={handleInputChange}
+                        type="email"
                     />
                     {/* <FormControlLabel
                     control={
