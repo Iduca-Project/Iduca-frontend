@@ -130,16 +130,16 @@ const HomeAdmin = () => {
         alert("Preencha todos os campos obrigatórios");
         return;
         }
-
+        console.log(specifyCompanyId)
         // Aqui você faria a chamada API para cadastrar
         const response = await axios.post(
-                "http://localhost:5284/api/admin/user", 
+                "http://localhost:5284/api/users", 
                 { 
-                    name: newCollaborator.name,
-                    identity: newCollaborator.identity,
-                    emai: newCollaborator.email,
-                    password: newCollaborator.identity
-                    
+                    Name: newCollaborator.name,
+                    Identity: newCollaborator.identity,
+                    Email: newCollaborator.email,
+                    Password: newCollaborator.identity,
+                    CompanyId: specifyCompanyId
                 },
                 {
                     headers: {
