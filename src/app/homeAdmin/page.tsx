@@ -6,9 +6,11 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BusinessIcon from '@mui/icons-material/Business';
 
 import { CardCompany } from "@/src/components/cardCompany";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NotifyModal } from "@/src/components/notifyModal";
 import { TextField, Button, DialogActions, DialogContent, Box, FormControlLabel, Checkbox } from '@mui/material';
+import axios from "axios";
+import { PermIdentity } from "@mui/icons-material";
 
 interface Company {
   id: number;
@@ -16,28 +18,39 @@ interface Company {
 }
 
 const HomeAdmin = () => {
-    const [companies, setCompanies] = useState<Company[]>([
-      {
-        id: 1,
-        name: "Empresa Alfa",
-      },
-      {
-        id: 2,
-        name: "Beta Ltda",
-      }
-    ]);
-
+    const token = localStorage.getItem("Token");
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [specifyCompanyId, setSpecifyCompanyId] = useState<string | undefined>();
     // Estado para o modal e formulário
     const [openAddModal, setOpenAddModal] = useState(false);
     const [newCompanyName, setNewCompanyName] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [newCollaborator, setNewCollaborator] = useState({
-        id: '',
+        identity: '',
         name: '',
-        email: '',
-        isManager: false
+        email: ''
     });
+
+    // Fetch inicial
+  useEffect(() => {
+    const fetchCompanies = async () => {
+        try {
+            const response = await axios.get("http://localhost:5284/api/admin/companies",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+            setCompanies(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar empresas:", error);
+        }
+    };
+
+    fetchCompanies();
+  }, []);
 
     // Funções do modal
     const handleOpenAddModal = () => setOpenAddModal(true);
@@ -56,13 +69,19 @@ const HomeAdmin = () => {
         
         try {
             // Simulando uma chamada API
-            const newCompany = {
-                id: companies.length + 1, // Isso seria gerado pelo backend na prática
-                name: newCompanyName.trim()
-            };
+            const response = await axios.post(
+                "http://localhost:5284/api/admin/companies", 
+                { Name: newCompanyName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+
 
             // Adiciona a nova empresa ao estado (simulando resposta da API)
-            setCompanies([...companies, newCompany]);
+            setCompanies([...companies, response.data]);
             
             // Fecha o modal e limpa o formulário
             handleCloseAddModal();
@@ -70,8 +89,11 @@ const HomeAdmin = () => {
             // Aqui você poderia adicionar a lógica para abrir outro modal
             // para adicionar o gestor responsável, se necessário
             // Ex: setShowAddManagerModal(true); setSelectedCompany(newCompany.id);
-            handleOpenModal();
+            handleOpenModal(response.data.id);
+            
 
+            
+    
         } catch (error) {
             console.error('Erro ao adicionar empresa:', error);
             alert('Ocorreu um erro ao adicionar a empresa');
@@ -81,15 +103,17 @@ const HomeAdmin = () => {
     };
 
         // Funções do modal
-    const handleOpenModal = () => setOpenModal(true);
+    const handleOpenModal = (companyId : string) => {
+        setSpecifyCompanyId(companyId)
+        setOpenModal(true)
+    };
     
     const handleCloseModal = () => {
         setOpenModal(false);
         setNewCollaborator({
-        id: '',
+        identity: '',
         name: '',
-        email: '',
-        isManager: false
+        email: ''
         });
     };
 
@@ -101,16 +125,33 @@ const HomeAdmin = () => {
         }));
     };
 
-    const handleSubmit = () => {
-        if (!newCollaborator.id || !newCollaborator.name || !newCollaborator.email) {
+    const handleSubmit = async () => {
+        if (!newCollaborator.identity || !newCollaborator.name || !newCollaborator.email) {
         alert("Preencha todos os campos obrigatórios");
         return;
         }
 
         // Aqui você faria a chamada API para cadastrar
+        const response = await axios.post(
+                "http://localhost:5284/api/admin/user", 
+                { 
+                    name: newCollaborator.name,
+                    identity: newCollaborator.identity,
+                    emai: newCollaborator.email,
+                    password: newCollaborator.identity
+                    
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+
+
         console.log("Novo colaborador:", {
         ...newCollaborator,
-        id: Number(newCollaborator.id),
+        identity: Number(newCollaborator.identity),
         coursesCompleted: 0,
         coursesInProgress: 0,
         averageScore: 0,
@@ -210,14 +251,13 @@ const HomeAdmin = () => {
                 <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
                     <TextField
-                    name="id"
-                    label="ID do Funcionário *"
+                    name="identity"
+                    label="Código do Funcionário *"
                     variant="outlined"
                     fullWidth
-                    value={newCollaborator.id}
+                    value={newCollaborator.identity}
                     onChange={handleInputChange}
-                    type="number"
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                    // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                     />
                     <TextField
                     name="name"
@@ -236,7 +276,7 @@ const HomeAdmin = () => {
                     onChange={handleInputChange}
                     type="email"
                     />
-                    <FormControlLabel
+                    {/* <FormControlLabel
                     control={
                         <Checkbox
                         name="isManager"
@@ -246,7 +286,7 @@ const HomeAdmin = () => {
                         />
                     }
                     label="É gestor?"
-                    />
+                    /> */}
                     <small style={{ color: 'gray' }}>* Campos obrigatórios</small>
                 </Box>
                 </DialogContent>
@@ -258,7 +298,7 @@ const HomeAdmin = () => {
                     onClick={handleSubmit} 
                     color="primary"
                     variant="contained"
-                    disabled={!newCollaborator.id || !newCollaborator.name || !newCollaborator.email}
+                    disabled={!newCollaborator.identity || !newCollaborator.name || !newCollaborator.email}
                 >
                     Cadastrar
                 </Button>

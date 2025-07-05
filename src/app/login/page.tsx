@@ -2,7 +2,7 @@
 
 import { ROUTES } from "@/src/constants/routes";
 import { Button, Divider, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Snackbar, SnackbarCloseReason, TextField } from "@mui/material";
-import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { VisibilityOff, Visibility, Password } from '@mui/icons-material';
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -37,27 +37,35 @@ const Login = () => {
 
     // Função de login
     const login = async () => {
-        // try {
-            // const response = await axios.post("http://localhost:8080/user/login", {
-            //     email: email,
-            //     password: pass,
-            // });
+        try {
+            const response = await axios.post("http://localhost:5284/api/auth/login", {
+                email: email,
+                password: pass,
+            });
             
     
-            // const token = response.data.token;
-            // console.log(token);
+            const token = response.data.token;
     
-            // if (token)
-            //     localStorage.setItem("Token", token);
-            // else
-            //     setMessageReturn("Email ou senha inválidos!");
+            if(token)
+            {
+                localStorage.setItem("Token", token);
+            }
+            else
+                setMessageReturn("Email ou senha inválidos!");
             setMessageReturn("Login bem sucedido!");
             setOpenReturn(true);
-            router.push(ROUTES.home);
-        // } catch (error) {
-        //     console.error(error);
-        //     setMessageReturn("Ocorreu um erro ao fazer login, tente novamente mais tarde!");
-        // }
+
+
+            if(response.data.admin)
+                router.push(ROUTES.homeAdmin);
+            else if(response.data.manager)
+                router.push(ROUTES.homeManager);
+            else
+                router.push(ROUTES.home);
+
+        } catch (error) {
+            setMessageReturn("Ocorreu um erro ao fazer login, tente novamente mais tarde!");
+        }
     }
 
     return (
