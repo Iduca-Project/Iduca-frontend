@@ -11,6 +11,9 @@ import { ROUTES } from "@/src/constants/routes";
 import { CardCourse } from "@/src/components/cardCourse";
 import imageLideranca from "../../../public/image/lideranca.jpg";
 import { CalendarComp } from "@/src/components/calendar";
+import { useEffect, useState } from "react";
+import { Try } from "@mui/icons-material";
+import axios from "axios";
 
 interface ICardCourse {
     image: string;
@@ -22,8 +25,47 @@ interface ICardCourse {
     difficulty: number;
 }
 
+interface Course {
+    id: string;
+    image: string;
+    title: string;
+    description: string;
+    progress: number;
+    rating: number;
+    participants: number;
+    difficulty: number;
+}
+
 const Home = () => {
+    const [token, setToken] = useState<string | null>(null);
+    const [userCourses, setUserCourses] = useState<Course[]>([]);
     const router = useRouter();
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("Token");
+        setToken(storedToken);
+
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:5284/api/users/my-courses",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${storedToken}`
+                        }
+                    }
+                );
+
+                const data = Array.isArray(response.data) ? response.data : [];
+
+                setUserCourses(data);
+                console.log("Data: ", data);
+            } catch (error) {
+                console.log(error);
+                setUserCourses([]);
+            }
+        }
+    }, []);
 
     const eventos = [
         { title: "Reunião com o time", date: new Date(2025, 3, 23), type: 1 },
@@ -92,13 +134,18 @@ const Home = () => {
                         <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.courses)}></CuteButton>
                     </div>
                     <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-                        <CardCourse id={1} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={2} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo."} progress={37} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={3} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={47} rating={4.7} participants={12} difficulty={2}></CardCourse>
-                        <CardCourse id={4} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={68} rating={4.7} participants={1287} difficulty={2}></CardCourse>
-                        <CardCourse id={5} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={22} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={80} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                        <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Aprenda técnicas essenciais para se tornar um líder eficaz no ambiente corporativo moderno."} progress={100} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                        {userCourses.map((row) => (
+                            <CardCourse
+                                id={row.id}
+                                image={row.image}
+                                title={row.title}
+                                description={row.description}
+                                progress={row.progress}
+                                rating={row.rating}
+                                participants={row.participants}
+                                difficulty={row.difficulty}
+                            ></CardCourse>
+                        ))}
                     </div>
                 </div>
 

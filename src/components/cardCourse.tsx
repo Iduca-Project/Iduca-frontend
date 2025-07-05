@@ -13,7 +13,7 @@ interface ICardCourse {
     rating: number;
     participants: number;
     difficulty: number;
-    id: number;
+    id: string;
 }
 
 export const CardCourse = ({ image, title, description, progress, rating, participants, id, difficulty } : ICardCourse) => {
