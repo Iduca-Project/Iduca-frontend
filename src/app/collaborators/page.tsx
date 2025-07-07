@@ -34,6 +34,7 @@ import axios from 'axios';
 
   interface Collaborator {
     id: number;
+    identity: string;
     name: string;
     email: string;
     isManager: boolean;
@@ -44,7 +45,7 @@ import axios from 'axios';
   }
 
   const Collaborators = () => {
-    const [token, setToken] = useState<string | null>(null);
+    const token = sessionStorage.getItem("Token");
     const router = useRouter();
     const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
     const [sortConfig, setSortConfig] = useState<{ 
@@ -62,32 +63,26 @@ import axios from 'axios';
     });
 
     useEffect(() => {
-      const storedToken = localStorage.getItem("Token");
-      setToken(storedToken);
-
-      console.log("Token do localStorage:", storedToken);
 
       const fetchCollaborators = async () => {
           try {
             const response = await axios.get("http://localhost:5284/api/manager/team",
               {
                 headers: {
-                  Authorization: `Bearer ${storedToken}`,
+                  Authorization: `Bearer ${token}`,
                 }
               }
             );
             const data = Array.isArray(response.data.team) ? response.data.team : [];
             setCollaborators(data);
-            console.log("Colaboradores recebidos:", data);
           } catch (error) {
             console.error("Erro ao buscar colaboradores:", error);
             setCollaborators([]);
           }
         };
 
-        if (storedToken) {
-          fetchCollaborators();
-        }
+        fetchCollaborators();
+        
     }, []);
   
 
@@ -130,8 +125,7 @@ import axios from 'axios';
           Name: newCollaborator.name,
           Identity: newCollaborator.id,
           Email: newCollaborator.email,
-          Password: newCollaborator.id,
-          IsAdmin: false
+          Password: newCollaborator.id
         },
         {
           headers: {
@@ -139,8 +133,7 @@ import axios from 'axios';
           }
         }
       );
-      
-      console.log("Colaborador criado com sucesso:", response.data);
+
       handleCloseModal();
       
       // Recarregar a lista de colaboradores
@@ -195,7 +188,6 @@ import axios from 'axios';
 
   const downloadReport = () => {
     // Implementar lógica de download
-    console.log("Exportando relatório...");
   };
 
   return (
@@ -256,17 +248,7 @@ import axios from 'axios';
                 onChange={handleInputChange}
                 type="email"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="isManager"
-                    checked={newCollaborator.isManager}
-                    onChange={handleInputChange}
-                    color="primary"
-                  />
-                }
-                label="É gestor?"
-              />
+              
               <small style={{ color: 'gray' }}>* Campos obrigatórios</small>
             </Box>
           </DialogContent>
@@ -352,7 +334,7 @@ import axios from 'axios';
                   className="hover:bg-(--hoverWhite) transition duration-150" 
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  <TableCell align="center">{row.id}</TableCell>
+                  <TableCell align="center">{row.identity}</TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.coursesCount ?? 0}</TableCell>

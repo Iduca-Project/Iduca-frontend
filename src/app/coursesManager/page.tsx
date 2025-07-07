@@ -16,23 +16,29 @@ import {
   Button,
   Box
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import imageLideranca from "../../../public/image/lideranca.jpg";
 import { CardCourse } from "@/src/components/cardCourse";
 import { CuteButton } from "@/src/components/cuteButton";
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 import { NotifyModal } from "@/src/components/notifyModal";
+import axios from "axios";
 
-const CATEGORIES = ["tecnologia", "gestão", "segurança"];
 const LEVELS = ["iniciante", "intermediario", "avancado"];
 
 const CoursesManager = () => {
+    const token = sessionStorage.getItem("Token");
+
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [level, setLevel] = useState("");
+    
+    const [categories, setCategories] = useState([]);
+    const [courses, setCourses] = useState([]);
+
     const [openModal, setOpenModal] = useState(false);
     const [collaboratorInfo, setCollaboratorInfo] = useState({
-        nameOrId: "",
+        Identity: "",
         courseName: ""
     });
 
@@ -44,10 +50,56 @@ const CoursesManager = () => {
         setOpenModal(false);
         // Limpa os campos ao fechar
         setCollaboratorInfo({
-            nameOrId: "",
+            Identity: "",
             courseName: ""
         });
     };
+
+
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get("http://localhost:5284/api/categories",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+                setCategories(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar empresas:", error);
+            }
+        };
+
+
+    
+        fetchCategories();
+        }, []);
+
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5284/api/courses?${`page=${1}&`}${level != '' ? `difficulty=${level}&` : ''}${title != '' ? `search=${title}&` : ''}${category != '' ? `category=${category}&` : ''}${`maxItems=${10}`}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+                setCourses(response.data.courses)
+            } catch (error) {
+                console.error("Erro ao buscar empresas:", error);
+            }
+        };
+        fetchCourses();
+        }, [title,category,level]);
+    
+
+
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -57,9 +109,26 @@ const CoursesManager = () => {
         }));
     };
 
-    const handleSubmit = () => {
-        // Aqui você pode adicionar a lógica para inscrever o colaborador
-        console.log("Dados do formulário:", collaboratorInfo);
+    const handleSubmit = async () => {
+
+        try {
+            const response = await axios.post("http://localhost:5284/api/manager/enroll",
+                {
+                    Identity: collaboratorInfo.Identity,
+                    CourseName: collaboratorInfo.courseName
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+
+        } catch (error) {
+            console.error("Erro ao cadastrar funcionário:", error);
+        }       
+
+
         // Fecha o modal após o envio
         handleCloseModal();
     };
@@ -86,11 +155,11 @@ const CoursesManager = () => {
                     <DialogContent>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '20px 0' }}>
                             <TextField
-                                name="nameOrId"
-                                label="Nome ou ID do Colaborador"
+                                name="Identity"
+                                label="ID do Colaborador"
                                 variant="outlined"
                                 fullWidth
-                                value={collaboratorInfo.nameOrId}
+                                value={collaboratorInfo.Identity}
                                 onChange={handleInputChange}
                                 sx={{ marginBottom: 2 }}
                             />
@@ -112,7 +181,7 @@ const CoursesManager = () => {
                             onClick={handleSubmit} 
                             color="primary"
                             variant="contained"
-                            disabled={!collaboratorInfo.nameOrId || !collaboratorInfo.courseName}
+                            disabled={!collaboratorInfo.Identity || !collaboratorInfo.courseName}
                         >
                             Inscrever
                         </Button>
@@ -131,12 +200,12 @@ const CoursesManager = () => {
                     <FormControl fullWidth sx={{ backgroundColor: "var(--card)" }}>
                         <InputLabel>Categoria</InputLabel>
                         <Select value={category} label="Categoria" onChange={(e) => setCategory(e.target.value)} >
-                            <MenuItem value="">
-                                <em>Todos</em>
+                            <MenuItem key={0} value={0}>
+                                Todos
                             </MenuItem>
-                            {CATEGORIES.map((cat) => (
-                                <MenuItem key={cat} value={cat}>
-                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            {categories.map((cat) => (
+                                <MenuItem key={cat.id} value={cat.id}>
+                                    {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -145,11 +214,11 @@ const CoursesManager = () => {
                     <FormControl fullWidth sx={{ backgroundColor: "var(--card)" }}>
                         <InputLabel>Nível</InputLabel>
                         <Select value={level} label="Nível" onChange={(e) => setLevel(e.target.value)} >
-                            <MenuItem value="">
-                                <em>Todos</em>
+                            <MenuItem key={0} value={0}>
+                                Todos
                             </MenuItem>
-                            {LEVELS.map((lvl) => (
-                                <MenuItem key={lvl} value={lvl}>
+                            {LEVELS.map((lvl,i) => (
+                                <MenuItem key={i} value={i+1}>
                                     {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
                                 </MenuItem>
                             ))}
@@ -160,14 +229,21 @@ const CoursesManager = () => {
                 <div>
                     <div className="flex flex-col gap-10 items-center">
                         <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
-                            <CardCourse id={1} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={2} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={3} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={4} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={5} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={6} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={7} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
-                            <CardCourse id={8} image={imageLideranca} title={"Liderança Estratégica"} description={"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus, velit! Maiores culpa minima quod. Aperiam nam fugiat placeat repudiandae enim fugit rerum veniam vitae voluptate, iure molestias nemo quaerat earum!"} progress={97} rating={4.7} participants={128} difficulty={2}></CardCourse>
+                            {courses.map((c) => (
+                                <CardCourse 
+                                    key={c.id}
+                                    id={c.id} 
+                                    image={c.image} 
+                                    title={c.name} 
+                                    description={c.description} 
+                                    progress={0} 
+                                    rating={4.7} 
+                                    participants={128} 
+                                    difficulty={c.difficulty}
+                                >
+
+                                </CardCourse>
+                            ))}
                         </div>
                         <Pagination count={10} color="primary" />
                     </div>

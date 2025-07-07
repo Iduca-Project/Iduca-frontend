@@ -4,20 +4,23 @@ import { Menu } from "@/src/components/menu";
 import { CuteButton } from "@/src/components/cuteButton";
 import { useRouter } from 'next/navigation';
 import { ROUTES } from "@/src/constants/routes";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NotifyModal } from "@/src/components/notifyModal";
 import { TextField, Button, DialogActions, DialogContent, Box, Select, MenuItem, InputLabel, FormControl, Checkbox, FormControlLabel, SelectChangeEvent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from "axios";
 
-const CATEGORIES = ["Ferramentas", "Programação", "Design", "Gestão", "Marketing"];
+const CATEGORIES = [""];
 
 const AddCourse = () => {
+    const token = sessionStorage.getItem("Token");
     const router = useRouter();
     const [openModuleModal, setOpenModuleModal] = useState(false);
     const [openContentModal, setOpenContentModal] = useState(false);
     const [openExamModal, setOpenExamModal] = useState(false);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+    const [categories, setCategories] = useState([{id: '', name: ''}]);
     
     // Estados para atividade escrita
     const [textContent, setTextContent] = useState("");
@@ -26,6 +29,25 @@ const AddCourse = () => {
         type: 'text' | 'image';
         content: string;
     }>>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get("http://localhost:5284/api/categories",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+                setCategories(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar empresas:", error);
+            }
+        };
+    
+        fetchCategories();
+      }, []);
     
     // Estados para atividade múltipla escolha
     const [activityQuestions, setActivityQuestions] = useState<Array<{
@@ -290,12 +312,97 @@ const AddCourse = () => {
         }
 
         try {
+            const p = 
+                {
+                    Title:          courseData.title,
+                    Image:          courseData.image,
+                    Categories:     [courseData.category],
+                    Description:    courseData.description,
+                    Difficulty:     courseData.difficulty,
+                    Duration:       courseData.duration,
+                    
+                    Exam:           courseData.exam != null || courseData.exam != undefined ? {
+                        Title:          courseData.exam.title,
+                        Description:    courseData.exam.description,
+                        Questions:      courseData.exam.questions.map((question) => {
+                            return{
+                                Description: question.question,
+                                Alternatives: question.options.map((alternative) => {
+                                    return{
+                                        Description: alternative.text,
+                                        IsCorrect:   alternative.id == question.correctAnswer
+                                    }
+                                })
+                            };
+                        })
+                    } : null,
+
+                    Modules:        courseData.modules.map((module) => {
+                        return{
+                            Name:           module.title,
+                            Description:    module.description,
+
+                            Lessons:        module.content.filter((content) => content.type == 1).map((contentLesosn) => {
+                                return {
+                                    Name:           contentLesosn.title,
+                                    Description:    contentLesosn.description,
+                                    Contents:       contentLesosn.content.map((content) => {
+                                        return {
+                                            Title:          "",
+                                            Description:    content.type == "text" ? content.content : null,
+                                            Image:          content.type == "image" ? content.content : null
+                                        }
+                                    })
+                                }
+                            }),
+
+                            Exercises:      module.content.filter((content) => content.type == 3).map((exercise) => {
+                                return {
+                                    Title:          exercise.title,
+                                    Description:    exercise.description,
+                                    Date: exercise.date ?? new Date().toISOString(),
+                                    
+                                    Questions:      exercise.content.map((question) => {
+                                        return {
+                                            Description:    question.question,
+                                            Alternatives:   question.options.map((alternative) => {
+                                                return {
+                                                    Description: alternative.text,
+                                                    IsCorrect:   alternative.id == question.correctAnswer
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            
+                console.log(p)
+
+
             // Aqui você faria a chamada API para criar o curso
-            console.log("Dados do curso a serem enviados:", courseData);
+            const response = await axios.post('http://localhost:5284/api/admin/course', p,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            )
+            
+            const modules = courseData.modules.map((m,i) => {
+                return {
+                    name : m.title,
+                    description : m.description,
+                    index : i
+                }
+            })
+
             
             // Simulando resposta da API
             alert("Curso criado com sucesso!");
-            router.push(ROUTES.coursesManager);
+            router.push(ROUTES.coursesAdmin);
             
         } catch (error) {
             console.error("Erro ao criar curso:", error);
@@ -539,8 +646,8 @@ const AddCourse = () => {
                                 onChange={handleCourseChange}
                                 label="Categoria *"
                             >
-                                {CATEGORIES.map(cat => (
-                                    <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                                {categories.map(cat => (
+                                    <MenuItem key={cat.name} value={cat.id}>{cat.name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -916,8 +1023,13 @@ const AddCourse = () => {
                     >
                         Salvar Prova
                     </Button>
+
+
                 </DialogActions>
             </NotifyModal>
+            <Button onClick={() => console.log(courseData)} color="primary">
+                Cancelar
+            </Button>
         </>
     );
 };

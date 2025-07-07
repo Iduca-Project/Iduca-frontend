@@ -37,34 +37,52 @@ interface Course {
 }
 
 const Home = () => {
-    const [token, setToken] = useState<string | null>(null);
+    const token = sessionStorage.getItem("Token");
+    
     const [userCourses, setUserCourses] = useState<Course[]>([]);
     const router = useRouter();
+    
+    const [username, setUsername] = useState();
+    useEffect(() => {
+        const fetchHome = async () => {
+            try {
+                const response = await axios.get("http://localhost:5284/api/profile",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+                setUsername(response.data.name);
+            } catch (error) {
+                console.error("Erro ao buscar usuário:", error);
+            }
+        };
+        fetchHome();
+      }, []);
+
+
+
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("Token");
-        setToken(storedToken);
 
         const fetchCourses = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:5284/api/users/my-courses",
+                    `http://localhost:5284/api/courses/user`,
                     {
                         headers: {
-                            Authorization: `Bearer ${storedToken}`
+                            Authorization: `Bearer ${token}`
                         }
                     }
                 );
-
-                const data = Array.isArray(response.data) ? response.data : [];
-
-                setUserCourses(data);
-                console.log("Data: ", data);
+                setUserCourses(response.data.courses);
             } catch (error) {
                 console.log(error);
                 setUserCourses([]);
             }
         }
+        fetchCourses()
     }, []);
 
     const eventos = [
@@ -82,7 +100,7 @@ const Home = () => {
             <div className="flex flex-col md:px-20 lg:px-40 px-2 py-10 gap-8">
                 {/* Title */}
                 <div className="flex flex-col gap-1 items-center p-1 md:items-start">
-                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">Bem vindo(a), Sabrina!</h1>
+                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">Bem vindo(a), {username}!</h1>
                     <p className="text-(--gray) text-sm md:text-lg text-center md:text-start">Acompanhe seu progresso e próximos eventos!</p>
                 </div>
 
@@ -136,13 +154,14 @@ const Home = () => {
                     <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4">
                         {userCourses.map((row) => (
                             <CardCourse
+                                key={row.id}
                                 id={row.id}
                                 image={row.image}
                                 title={row.title}
                                 description={row.description}
-                                progress={row.progress}
-                                rating={row.rating}
-                                participants={row.participants}
+                                progress={0}
+                                rating={0}
+                                participants={0}
                                 difficulty={row.difficulty}
                             ></CardCourse>
                         ))}

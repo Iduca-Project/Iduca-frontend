@@ -48,13 +48,12 @@ const Login = () => {
     
             if(token)
             {
-                localStorage.setItem("Token", token);
+                sessionStorage.setItem("Token", token);
             }
             else
                 setMessageReturn("Email ou senha inválidos!");
             setMessageReturn("Login bem sucedido!");
             setOpenReturn(true);
-
 
             if(response.data.admin)
                 router.push(ROUTES.homeAdmin);

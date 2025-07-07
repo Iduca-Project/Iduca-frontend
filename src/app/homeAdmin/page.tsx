@@ -18,7 +18,7 @@ interface Company {
 }
 
 const HomeAdmin = () => {
-    const token = localStorage.getItem("Token");
+    const token = sessionStorage.getItem("Token");
     const [companies, setCompanies] = useState<Company[]>([]);
     const [specifyCompanyId, setSpecifyCompanyId] = useState<string | undefined>();
     // Estado para o modal e formulário
@@ -131,8 +131,6 @@ const HomeAdmin = () => {
             return;
         }
 
-        console.log(specifyCompanyId)
-
         const response = await axios.post (
                 "http://localhost:5284/api/users", 
                 { 
@@ -148,16 +146,6 @@ const HomeAdmin = () => {
                     }
                 }
             );
-
-
-            console.log("Novo colaborador:", {
-            ...newCollaborator,
-            identity: Number(newCollaborator.identity),
-            coursesCompleted: 0,
-            coursesInProgress: 0,
-            averageScore: 0,
-            topCategory: ""
-        });
 
         handleCloseModal();
     };

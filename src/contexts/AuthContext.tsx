@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Ao carregar a aplicação, verifica se já existe um token no localStorage
     useEffect(() => {
-        const storagedToken = localStorage.getItem('@Iduca:token');
+        const storagedToken = sessionStorage.getItem('token');
         if (storagedToken) {
             setToken(storagedToken);
             // Configura o token no header do Axios para futuras requisições
@@ -34,9 +34,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setToken(newToken);
             api.defaults.headers.Authorization = `Bearer ${newToken}`;
 
-            localStorage.setItem('@Iduca:token', newToken);
+            sessionStorage.setItem('token', newToken);
             // Você pode guardar o 'firstAccess' também para redirecionar o usuário
-            localStorage.setItem('@Iduca:firstAccess', JSON.stringify(firstAccess));
+            sessionStorage.setItem('@Iduca:firstAccess', JSON.stringify(firstAccess));
 
         } catch (error) {
             // Lidar com erros de login aqui (ex: mostrar um toast de "senha inválida")

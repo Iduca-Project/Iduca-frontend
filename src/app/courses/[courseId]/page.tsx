@@ -1,3 +1,5 @@
+"use client"
+
 import { Menu } from "@/src/components/menu";
 import imagem from "../../../../public/image/lideranca.jpg";
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
@@ -13,6 +15,9 @@ import FilePresentOutlinedIcon from '@mui/icons-material/FilePresentOutlined';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { use } from 'react';
 
 
 interface ISelectCourse {
@@ -22,117 +27,52 @@ interface ISelectCourse {
 }
 
 
-const selectCourse = async ({ params } : ISelectCourse) => {
-    const { courseId } = params;
+const selectCourse = ({ params }: { params: Promise<{ courseId: string }> }) => {
+    const token = sessionStorage.getItem("Token");
+    const { courseId } = use(params);
 
-    const exempleCourse = {
-        image: imagem,
-        title: "Liderança estratégica",
-        description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt accusamus maxime animi! Ducimus dolore eaque nobis ea optio minus placeat officia saepe voluptatum dolores fugit, explicabo enim illum alias quam. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt accusamus maxime animi! Ducimus dolore eaque nobis ea optio minus placeat officia saepe voluptatum dolores fugit, explicabo enim illum alias quam.",
-        progress: 30,
-        rating: 4.7,
-        participants: 23,
-        difficulty: 1,
-        duration: 12,
-        category: "Gestão",
-        haveExam: true,
-        id: courseId,
-        modules: [
-            {
-                id: 1,
-                title: "Diferenças entre Líder x Chefe",
-                description: "bla bla bla líder bla bla bla chefe bla bla bla",
-                content: [
-                    {
-                        id: 1,
-                        type: 1,
-                        title: "Introdução",
-                        completed: true
-                    },
-                    {
-                        id: 2,
-                        type: 2,
-                        title: "Principais diferenças",
-                        completed: true 
-                    },
-                    {
-                        id: 3,
-                        type: 3,
-                        title: "Questionário sobre o conteúdo",
-                        completed: true
-                    },
-                    {
-                        id: 4,
-                        type: 4,
-                        title: "Projeto",
-                        completed: false
-                    }
-                ]
-            },
-            {
-                id: 2,
-                title: "Como liderar uma equipe com muitos funcionários?",
-                description: "bla bla bla líder bla bla bla chefe bla bla bla",
-                content: [
-                    {
-                        id: 1,
-                        type: 1,
-                        title: "Conteúdo 1",
-                        completed: false
-                    },
-                    {
-                        id: 2,
-                        type: 2,
-                        title: "Conteúdo 2",
-                        completed: false  
-                    },
-                    {
-                        id: 3,
-                        type: 3,
-                        title: "Conteúdo 3",
-                        completed: false
-                    },
-                    {
-                        id: 4,
-                        type: 4,
-                        title: "Conteúdo 4",
-                        completed: false
-                    }
-                ]
-            },
-            {
-                id: 3,
-                title: "Conteúdo fofinho lindo",
-                description: "bla bla bla líder bla bla bla chefe bla bla bla",
-                content: [
-                    {
-                        id: 1,
-                        type: 1,
-                        title: "Conteúdo 1",
-                        completed: false
-                    },
-                    {
-                        id: 2,
-                        type: 2,
-                        title: "Conteúdo 2",
-                        completed: false 
-                    },
-                    {
-                        id: 3,
-                        type: 3,
-                        title: "Conteúdo 3",
-                        completed: false
-                    },
-                    {
-                        id: 4,
-                        type: 4,
-                        title: "Conteúdo 4",
-                        completed: false
-                    }
-                ]
-            },
-        ]
-    };
+
+
+    
+    const [course, setCourse] = useState(
+        {
+            image: "",
+            title: "",
+            description: "",
+            progress: "",
+            rating: "",
+            participants: "",
+            difficulty: 0,
+            duration: "",
+            category: 0,
+            haveExam: "",
+            id: "",
+            modules: []
+        }
+    );
+
+
+    useEffect(() => {
+            const fetchCourse = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5284/api/courses/${courseId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            }
+                        }
+                    );
+                    setCourse(response.data);
+                    console.log(response.data)
+                } catch (error) {
+                    console.error("Erro ao buscar empresas:", error);
+                }
+            };
+            
+    
+        
+            fetchCourse();
+          }, []);
 
     const testExemple = {
         id: 1,
@@ -168,22 +108,22 @@ const selectCourse = async ({ params } : ISelectCourse) => {
 
                 {/* Title */}
                 <div className="flex flex-col gap-1 items-center p-1 md:items-start">
-                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">Liderança Estratégica</h1>
+                    <h1 className="md:text-2xl text-xl font-bold text-(--text)">{course.title}</h1>
                     <div className="flex gap-2">
-                        <span className={`${exempleCourse.difficulty == 1 ? "bg-(--green)" : exempleCourse.difficulty == 2 ? "bg-(--blue)" : "bg-(--purple)"} text-white text-xs font-semibold px-2 py-1 rounded-lg shadow-lg`}>
-                            {exempleCourse.difficulty == 1 ? "Iniciante" : exempleCourse.difficulty == 2 ? "Intermediário" : "Avançado"}
+                        <span className={`${course.difficulty == 1 ? "bg-(--green)" : course.difficulty == 2 ? "bg-(--blue)" : "bg-(--purple)"} text-white text-xs font-semibold px-2 py-1 rounded-lg shadow-lg`}>
+                            {course.difficulty == 1 ? "Iniciante" : course.difficulty == 2 ? "Intermediário" : "Avançado"}
                         </span>
                         <div className="flex items-center gap-1">
                             <AccessTimeOutlinedIcon sx={{ color: "var(--gray)" }}/>
-                            <p className="text-(--gray) text-sm text-center md:text-start">{exempleCourse.duration} horas</p>
+                            <p className="text-(--gray) text-sm text-center md:text-start">{course.duration} horas</p>
                         </div>
                         <div className="flex items-center gap-1">
                             <PeopleAltOutlinedIcon sx={{ color: "var(--gray)" }}/>
-                            <p className="text-(--gray) text-sm text-center md:text-start">{exempleCourse.participants} participantes</p>
+                            <p className="text-(--gray) text-sm text-center md:text-start">{course.participants} participantes</p>
                         </div>
                         <div className="flex items-center gap-1">
                             <StarOutlinedIcon sx={{ color: "var(--yellow)" }}/>
-                            <p className="text-(--gray) text-sm text-center md:text-start">{exempleCourse.rating}</p>
+                            <p className="text-(--gray) text-sm text-center md:text-start">{course.rating}</p>
                         </div>
                     </div>
                 </div>
@@ -192,33 +132,33 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                 <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10 p-1">
                     <div className="flex flex-col gap-5 justify-around">
                         <p className="text-(--text)">
-                            {exempleCourse.description}
+                            {course.description}
                         </p>
                         <div className="flex flex-col gap-2">
                             <div>
                                 <div className="flex w-full justify-between">
                                     <h2 className="text-(--text)">Progresso geral</h2>
-                                    <h2 className="text-(--text)">{exempleCourse.progress}%</h2>
+                                    <h2 className="text-(--text)">{course.progress}%</h2>
                                 </div>
-                                <LinearProgress variant="determinate" value={exempleCourse.progress} />
+                                <LinearProgress variant="determinate" value={course.progress} />
                             </div>
                             <Link href={`/project/1`} className="w-3/6 self-start">
                                 <div className="bg-(--normalBlue) flex items-center justify-center w-full rounded-2xl hover:bg-(--normalBlueHover) text-white">
-                                    <Button className="w-full" disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit", color: "inherit", height: "45px"}}>{exempleCourse.progress > 0 ? "Continuar Curso" : "Iniciar Curso"}</Button>
+                                    <Button className="w-full" disableElevation variant="contained" sx={{boxShadow: 'var(--shadow)', backgroundColor: "inherit", color: "inherit", height: "45px"}}>{course.progress > 0 ? "Continuar Curso" : "Iniciar Curso"}</Button>
                                 </div>
                             </Link>
 
                         </div>
                         
                     </div>
-                    <Image className="object-cover w-full md:w-auto rounded-2xl justify-self-center" src={exempleCourse.image} alt={`${exempleCourse.title}.png`} width={500} height={500} priority />
+                    <Image className="object-cover w-full md:w-auto rounded-2xl justify-self-center" src={course.image} alt={`${course.title}.png`} width={500} height={500} priority />
                 </div>
 
                 <Divider sx={{ borderColor: 'var(--gray)' }} />
 
 
                 <div>
-                    {exempleCourse.modules.map((module, index) => 
+                    {course.modules.map((module, index) => 
                         <Accordion key={module.id}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <h1 className="text-(--blue) font-bold mr-2">Módulo {index + 1} -</h1>
@@ -239,7 +179,7 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                                     </div>
                                                 </Link>
                                             : content.type == 2 ? 
-                                                <Link key={`${module.id}-${content.id}`} href={`/videoLesson/${content.id}`}>
+                                                <Link key={`${module.id}-${content.id}`} href={`/videoLesson/${z}`}>
                                                     <div className="flex mb-2 mt-2 gap-3 items-center w-full hover:bg-(--redOpacity) transition-colors duration-100">
                                                         <div className="bg-(--red) w-1 min-h-10"></div>
                                                         <VideocamOutlinedIcon sx={{ color: "var(--red)"}}/>
@@ -326,11 +266,11 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                             </AccordionDetails>
                         </Accordion>
                     )}
-                    {exempleCourse.haveExam && !testExemple.completed ? (
+                    {course.haveExam && !testExemple.completed ? (
 
                         <Accordion>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <h1 className="text-(--blue) font-bold mr-2">Módulo {exempleCourse.modules.length + 1} -</h1>
+                                <h1 className="text-(--blue) font-bold mr-2">Módulo {course.modules.length + 1} -</h1>
                                 <p className="text-(--text)">Prova Final</p>
                             </AccordionSummary>
                             <AccordionDetails>
@@ -343,10 +283,10 @@ const selectCourse = async ({ params } : ISelectCourse) => {
                                 </Link>
                             </AccordionDetails>
                         </Accordion>
-                    ) : exempleCourse.haveExam && testExemple.completed ? (
+                    ) : course.haveExam && testExemple.completed ? (
                         <Accordion>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <h1 className="text-(--blue) font-bold mr-2">Módulo {exempleCourse.modules.length + 1} -</h1>
+                            <h1 className="text-(--blue) font-bold mr-2">Módulo {course.modules.length + 1} -</h1>
                             <p className="text-(--text)">Prova Final</p>
                         </AccordionSummary>
                         <AccordionDetails>
