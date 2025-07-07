@@ -92,7 +92,7 @@ const SelectCoursePage = async ({ params }: PageProps) => {
     const continueLink = getLinkForContent(firstUncompletedLesson || courseData.modules[0]?.content[0]);
     
     const isExamCompleted = examData?.completed || false;
-    const examLink = isExamCompleted ? `/quizCompleted/${examData.id}?courseId=${courseId}` : `/exam/${courseId}`;
+    const examLink = isExamCompleted ? `/quizCompleted/${examData.id}?courseId=${courseId}` : `/courses/${courseId}/exam/${courseId}`;
     
     return (
         <>

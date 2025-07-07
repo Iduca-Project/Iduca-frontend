@@ -45,7 +45,7 @@ export const Menu = () => {
         setNotifyOpen(true);
         setIsLoadingNotify(true);
         try {
-            const response = await api.get('/notifications');
+            const response = await api.get('/notification');
             setNotifications(response.data);
         } catch (error) {
             console.error("Erro ao buscar notificações:", error);

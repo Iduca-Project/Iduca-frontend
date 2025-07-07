@@ -169,14 +169,6 @@ const Home = () => {
                     </div>
                 </div>
 
-                {/* Calendário */}
-                {/* <div className="flex flex-col gap-4 mb-10">
-                    <div className="flex sm:flex-row flex-col gap-2 justify-between items-center">
-                        <h1 className="md:text-2xl text-xl font-bold text-(--text)">Calendário de aulas</h1>
-                        <CuteButton text="Ver todos" icon={ArrowForwardIcon} onClick={() => router.push(ROUTES.calendar)}></CuteButton>
-                    </div>
-                    <CalendarComp events={calendarEvents}/>
-                </div> */}
             </div>
         </>
     )
