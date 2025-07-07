@@ -10,8 +10,9 @@ import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
 import { Card } from "@/src/components/card";
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import axios from "axios";
 
 
 const interests = [
@@ -22,13 +23,66 @@ const interests = [
     {title: "Design"},
 ]
 
+interface Course {
+    id: string;
+    name: string;
+}
+
+interface IProfileData {
+    id: string;
+    name: string;
+    email: string;
+    completedCourses: Course[];
+    interests: string[];
+    photoUser: string;
+}
 
 const Profile = () => {
+    const [token, setToken] = useState<string | null>(null);
     const [editOn, setEditOn] = useState(false);
+    const [profileData, setProfileData] = useState<IProfileData | null>();
     const router = useRouter();
     const [preview, setPreview] = useState<StaticImageData | string>(pessoa);
     const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("Token");
+        setToken(storedToken);
+
+        console.log(token)
+
+        const fetchProfile = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:5284/api/profile",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${storedToken}`
+                        }
+                    }
+                );
+
+                // Garantir que completedCourses seja sempre um array
+                const data = {
+                    ...response.data,
+                    completedCourses: Array.isArray(response.data.completedCourses) 
+                        ? response.data.completedCourses 
+                        : []
+                };
+
+                setProfileData(data);
+                console.log("Data: ", data);
+            } catch (error) {
+                console.log(error);
+                setProfileData(null);
+            }
+        }
+
+        if (storedToken) {
+            fetchProfile();
+        }
+    }, []);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
@@ -63,14 +117,14 @@ const Profile = () => {
                                 <>
                                     <Image className="rounded-full object-cover aspect-square w-52" src={pessoa} alt="imagem" width={3000} height={3000} priority></Image>
                                     <div className="flex flex-col gap-6 text-(--text)">
-                                        <TextField label="Nome completo" variant="outlined" defaultValue={`Sabrina Mortean`} slotProps={{ input: { readOnly: true } }}/>
-                                        <TextField label="E-mail corporativo" variant="outlined" defaultValue={`sabrina@bosch.com`} slotProps={{ input: { readOnly: true } }} sx={{ color: "inherit" }}/>
+                                        <TextField label="Nome completo" variant="outlined" value={profileData?.name || ''} slotProps={{ input: { readOnly: true } }}/>
+                                        <TextField label="E-mail corporativo" variant="outlined" value={profileData?.email || ''} slotProps={{ input: { readOnly: true } }} sx={{ color: "inherit" }}/>
                                         <Autocomplete
                                             multiple
                                             readOnly
                                             disableClearable
                                             options={interests.map((item) => item.title)}
-                                            defaultValue={interests.map((item) => item.title)}
+                                            value={profileData?.interests || []}
                                             disableCloseOnSelect
                                             sx={{ color: "var(--text)" }}
                                             renderInput={(params) => (
@@ -122,8 +176,8 @@ const Profile = () => {
                                             />
                                     </div>
                                     <div className="flex flex-col gap-6 text-(--text)">
-                                        <TextField label="Nome completo" variant="outlined" defaultValue={`Sabrina Mortean`}/>
-                                        <TextField label="E-mail corporativo" variant="outlined" defaultValue={`sabrina@bosch.com`} sx={{ color: "inherit" }}/>
+                                        <TextField label="Nome completo" variant="outlined" value={profileData?.name}/>
+                                        <TextField label="E-mail corporativo" variant="outlined" sx={{ color: "inherit" }}/>
                                         <Autocomplete
                                             multiple
                                             disableClearable
@@ -166,23 +220,30 @@ const Profile = () => {
                                     <div className="flex items-center justify-center p-1 bg-(--greenOpacity) rounded-full">
                                         <EmojiEventsOutlinedIcon sx={{ color: "var(--green)" }}/>
                                     </div>
-                                    <h1 className="text-(--gray) text-center">4 cursos finalizados</h1>
+                                    <h1 className="text-(--gray) text-center">{profileData?.completedCourses.length} Cursos Finalizados</h1>
                                 </div>
                                 <div className="flex bg-(--card) border border-(--stroke) shadow-(--shadow) rounded-2xl p-4 py-8 items-center gap-3 flex-col justify-center w-52">
                                     <div className="flex items-center justify-center p-1 bg-(--yellowOpacity) rounded-full">
                                         <StarBorderOutlinedIcon sx={{ color: "var(--yellow)" }}/>
                                     </div>
-                                    <h1 className="text-(--gray) text-center">Média nas provas: 8.9</h1>
+                                    <h1 className="text-(--gray) text-center">Média nas provas:</h1>
                                 </div>
                             </div>
                         </div>
                         <div className="flex flex-col gap-6">
                             <h1 className="text-xl font-bold text-(--text)">Cursos finalizados</h1>
                             <div className="flex flex-col gap-2 items-center justify-center">
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(1)}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(2)}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(3)}></Card>
-                                <Card color="bg-[var(--purple)]" title="Programação avançada" onClickButton={() => goToCertificate(4)}></Card>
+                                {profileData?.completedCourses && Array.isArray(profileData.completedCourses) && profileData.completedCourses.length > 0 ? (
+                                    profileData.completedCourses.map((row, index) => (
+                                        <Card
+                                            key={index}
+                                            color="bg-[var(--purple)]"
+                                            title={row.name}
+                                        ></Card>
+                                    ))
+                                ) : (
+                                    <p className="text-(--gray) text-center">Nenhum curso finalizado ainda.</p>
+                                )}
                             </div>
                         </div>
                         

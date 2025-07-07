@@ -16,16 +16,6 @@ import { Try } from "@mui/icons-material";
 import axios from "axios";
 
 interface ICardCourse {
-    image: string;
-    title: string;
-    description: string;
-    progress: number;
-    rating: number;
-    participants: number;
-    difficulty: number;
-}
-
-interface Course {
     id: string;
     image: string;
     title: string;
@@ -38,7 +28,7 @@ interface Course {
 
 const Home = () => {
     const [token, setToken] = useState<string | null>(null);
-    const [userCourses, setUserCourses] = useState<Course[]>([]);
+    const [userCourses, setUserCourses] = useState<ICardCourse[]>([]);
     const router = useRouter();
 
     useEffect(() => {
