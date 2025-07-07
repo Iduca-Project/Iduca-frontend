@@ -57,13 +57,49 @@ const HomeManager = () => {
         {
             label: "Programação",
             value: 48
-        }
+        },
+        {
+            label: "Marketing",
+            value: 95
+        },
+        {
+            label: "Saúde",
+            value: 80
+        },
+        {
+            label: "Design",
+            value: 91
+        },
+        {
+            label: "Mecânica",
+            value: 52
+        },
+        {
+            label: "Gestão",
+            value: 64
+        },
+        {
+            label: "Comunicação",
+            value: 43
+        },
+        {
+            label: "Eletrônica",
+            value: 18
+        },
     ]
 
     const data2 = [
         {
             label: "Concluído",
             value: 15
+        },
+        {
+            label: "Em andamento",
+            value: 40
+        },
+        {
+            label: "Não iniciado",
+            value: 5
         }
     ]
 

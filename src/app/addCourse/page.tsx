@@ -1027,9 +1027,6 @@ const AddCourse = () => {
 
                 </DialogActions>
             </NotifyModal>
-            <Button onClick={() => console.log(courseData)} color="primary">
-                Cancelar
-            </Button>
         </>
     );
 };

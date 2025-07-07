@@ -74,7 +74,7 @@ export const QuizClient = ({ quizId, isExam }: IQuizClient) => {
             <div key={q.id} className="bg-(--card) shadow-(--shadow) rounded-xl p-6">
                 <p className="text-lg mb-4 text-(--text)">{index + 1}. {q.description}</p>
                 <ul className="flex flex-col gap-2">
-                {q.alternatives.map(alternative => {
+                {q.alternatives.map((alternative, index) => {
                     const isSelected = answers[q.id] === alternative.id;
                     return (
                     <li
@@ -86,7 +86,7 @@ export const QuizClient = ({ quizId, isExam }: IQuizClient) => {
                         hover:bg-(--hoverWhite)
                         `}
                     >
-                        <span className="font-bold mr-2 text-(--text)">{alternative.description.toUpperCase()}.</span>
+                        <span className="font-bold mr-2 text-(--text)">{String.fromCharCode(index+65).toUpperCase()}.</span>
                         <p className="text-(--text)">{alternative.description}</p>
                     </li>
                     );
